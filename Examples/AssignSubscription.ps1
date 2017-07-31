@@ -1,41 +1,41 @@
 <#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			AssignSubscription.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			April 26, 2017
+    Company:		BitTitan, Inc.
+    Title:			AssignSubscription.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			April 26, 2017
 
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Submit apply subscription request for all the users within the specified workgroup.
+    Submit apply subscription request for all the users within the specified workgroup.
 
 .DESCRIPTION 	
-	This script is an example to show the subscription assignment is programmable. This script will create a add subscription task for each customer end user within the workgroup.
+    This script is an example to show the subscription assignment is programmable. This script will create a add subscription task for each customer end user within the workgroup.
     The task will be handled by AEF.
 
 .INPUTS
-	-[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
+    -[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
     -[guid] WorkGroupId, the id of the workgroup.
-	-[int] PageSize, the batch size of every retrieve request.
+    -[int] PageSize, the batch size of every retrieve request.
     -[string] Env, the context to work with. Valid options : BT, China.
 
 .EXAMPLE
-  	.\AssignSubscription.ps1 -Ticket -WorkGroupId 
-	Runs the script to submit add subscription tasks for each one of the customer end users within the workgroup.
+    .\AssignSubscription.ps1 -Ticket -WorkGroupId 
+    Runs the script to submit add subscription tasks for each one of the customer end users within the workgroup.
 #>
 
 param(
     # Ticket 
-	[Parameter(Mandatory=$True)]
-	[ManagementProxy.ManagementService.Ticket] $Ticket,
+    [Parameter(Mandatory=$True)]
+    [ManagementProxy.ManagementService.Ticket] $Ticket,
 
     # Ticket for authentication
     [Parameter(Mandatory=$True)]

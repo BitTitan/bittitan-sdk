@@ -1,58 +1,58 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			GetDMACustomerStatistics.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.01
-	Date:			April 6, 2017
+    Company:		BitTitan, Inc.
+    Title:			GetDMACustomerStatistics.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.01
+    Date:			April 6, 2017
 
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Generates a full csv report of DMA statistics for a given customer.
+    Generates a full csv report of DMA statistics for a given customer.
 
 .DESCRIPTION 	
-	This script retrieves all DMA statistics data for a given customer and generates a report. 
+    This script retrieves all DMA statistics data for a given customer and generates a report. 
 
 .INPUTS
-	-[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
-	-[guid] CustomerId, the id of the customer to report.
-	-[string] Csv, the csv output path.
-	-[int] PageSize, the batch size of every retrieve request.
-	-[string] Env, the context to work with. Valid options : BT, China.
+    -[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
+    -[guid] CustomerId, the id of the customer to report.
+    -[string] Csv, the csv output path.
+    -[int] PageSize, the batch size of every retrieve request.
+    -[string] Env, the context to work with. Valid options : BT, China.
 
 .EXAMPLE
-  	.\GET-DMA_CustomerStatistics.ps1 -Ticket $BTTicket -CustomerId '12345678-0000-0000-0000-000000000000' -Csv '.\output.csv' -PageSize 100
-	Runs the script and outputs the DMA statistics for customer with id 12345678-0000-0000-0000-000000000000.
+    .\GET-DMA_CustomerStatistics.ps1 -Ticket $BTTicket -CustomerId '12345678-0000-0000-0000-000000000000' -Csv '.\output.csv' -PageSize 100
+    Runs the script and outputs the DMA statistics for customer with id 12345678-0000-0000-0000-000000000000.
 #>
 
 param(
     # Ticket for authentication
-	[Parameter(Mandatory=$True)]
-	[ManagementProxy.ManagementService.Ticket] $Ticket,
+    [Parameter(Mandatory=$True)]
+    [ManagementProxy.ManagementService.Ticket] $Ticket,
    
-	# The id of the customer to work with
-	[Parameter(Mandatory=$True)]
-	[guid] $CustomerId,
+    # The id of the customer to work with
+    [Parameter(Mandatory=$True)]
+    [guid] $CustomerId,
 
-	# The csv output file name
-	[Parameter(Mandatory=$False)]
-	[string] $Csv = ".\HealthCheckO365-Report-$CustomerId.csv",
+    # The csv output file name
+    [Parameter(Mandatory=$False)]
+    [string] $Csv = ".\HealthCheckO365-Report-$CustomerId.csv",
 
-	# The batch size of every retrieve request 
-	[Parameter(Mandatory=$False)]
-	[int] $PageSize = 100,
-	
+    # The batch size of every retrieve request 
+    [Parameter(Mandatory=$False)]
+    [int] $PageSize = 100,
+    
     # The environment to work with
-	[Parameter(Mandatory=$False)]
-	[ValidateSet("BT", "China")]
-	[string] $Env = "BT"
+    [Parameter(Mandatory=$False)]
+    [ValidateSet("BT", "China")]
+    [string] $Env = "BT"
 ) 
 
 # Retrieve the customer
@@ -118,21 +118,21 @@ foreach ($endUser in $customerEndUsers)
         # Retrieve the customer devices
         Write-Verbose "Retrieving the customerDevice with device id $($deviceUser.DeviceId)."   
 
-		# First check the local dictionary
-		if ($customerDevicesDictionary.ContainsKey($deviceUser.DeviceId))
-		{
-			$device = $customerDevicesDictionary[$deviceUser.DeviceId]
-		}
-		# If not, create a request and cache it in the dictionary
-		else
-		{
-			$device = Get-BT_CustomerDevice -Ticket $Ticket -Environment $Env -FilterBy_Guid_OrganizationId $organizationId -FilterBy_Guid_Id $deviceUser.DeviceId -FilterBy_Boolean_IsDeleted $False
-			if (-not $device) {
-				Write-Warning "No matching customer device found for customer device user $($deviceUser.DeviceId)."
-				continue
-			}
-			$customerDevicesDictionary.Add($deviceUser.DeviceId, $device)
-		}
+        # First check the local dictionary
+        if ($customerDevicesDictionary.ContainsKey($deviceUser.DeviceId))
+        {
+            $device = $customerDevicesDictionary[$deviceUser.DeviceId]
+        }
+        # If not, create a request and cache it in the dictionary
+        else
+        {
+            $device = Get-BT_CustomerDevice -Ticket $Ticket -Environment $Env -FilterBy_Guid_OrganizationId $organizationId -FilterBy_Guid_Id $deviceUser.DeviceId -FilterBy_Boolean_IsDeleted $False
+            if (-not $device) {
+                Write-Warning "No matching customer device found for customer device user $($deviceUser.DeviceId)."
+                continue
+            }
+            $customerDevicesDictionary.Add($deviceUser.DeviceId, $device)
+        }
 
         # Process information about incompatible machine items by searching for the different values in the incompatible items
         if ($device.OfficeIncompatibilitySummary)

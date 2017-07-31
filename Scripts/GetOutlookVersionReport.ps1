@@ -1,54 +1,54 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			GetOutlookVersionReport.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			MARCH 23, 2017
+    Company:		BitTitan, Inc.
+    Title:			GetOutlookVersionReport.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			MARCH 23, 2017
 
-	Exchange Version:	2016
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Exchange Version:	2016
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Generates a full report of outlook version for a given customer reported by DMA.
+    Generates a full report of outlook version for a given customer reported by DMA.
 
 .DESCRIPTION 	
-	This script retrieves all DMA statistics data for a given customer and generates a report. 
+    This script retrieves all DMA statistics data for a given customer and generates a report. 
 
 .INPUTS
-	-[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
+    -[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
     -[guid] CustomerId, the id of the customer to report.
-	-[string] Csv, the csv output path.
-	-[int] PageSize, the batch size of every retrieve request.
+    -[string] Csv, the csv output path.
+    -[int] PageSize, the batch size of every retrieve request.
     -[string] Env, the context to work with. Valid options : BT, China.
 
 .EXAMPLE
-  	.\GetOutlookVersionReport.ps1 -Ticket $BTTicket -customerId '12345678-0000-0000-0000-000000000000' -csv '.\output.csv' -pageSize 100 -env 'BT' 
-	Runs the script and outputs the outlook version statistics for customer with id 12345678-0000-0000-0000-000000000000.
+    .\GetOutlookVersionReport.ps1 -Ticket $BTTicket -customerId '12345678-0000-0000-0000-000000000000' -csv '.\output.csv' -pageSize 100 -env 'BT' 
+    Runs the script and outputs the outlook version statistics for customer with id 12345678-0000-0000-0000-000000000000.
 #>
 param(
     # Ticket for authentication
     [Parameter(Mandatory=$True)]
     [ManagementProxy.ManagementService.Ticket] $Ticket,
    
-	# The id of the customer to work with
-	[Parameter(Mandatory=$True)]
+    # The id of the customer to work with
+    [Parameter(Mandatory=$True)]
     [guid] $CustomerId,
 
-	# The csv output file name
+    # The csv output file name
     [Parameter(Mandatory=$False)]
     [string] $Csv = ".\VersionReport-$CustomerId.csv",
 
-	# The batch size of every retrieve request 
+    # The batch size of every retrieve request 
     [Parameter(Mandatory=$False)]
     [int] $PageSize = 100,
-	
+    
     # The environment to work with
     [Parameter(Mandatory=$False)]
     [ValidateSet("BT", "China")]

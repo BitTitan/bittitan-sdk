@@ -1,30 +1,30 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			BitTitanPowerShell.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			DECEMBER 1, 2016
+    Company:		BitTitan, Inc.
+    Title:			BitTitanPowerShell.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			DECEMBER 1, 2016
 
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Imports the BitTitan powershell module.
+    Imports the BitTitan powershell module.
 
 .DESCRIPTION 	
-	This script simply tries to import the BitTitanPowerShell.dll from the SDK installation folder.
+    This script simply tries to import the BitTitanPowerShell.dll from the SDK installation folder.
 
 .INPUTS	
 
 .EXAMPLE
-  	.\BitTitanPowerShell.ps1
-	Imports the BitTitanPowerShell.dll into the context.
+    .\BitTitanPowerShell.ps1
+    Imports the BitTitanPowerShell.dll into the context.
 #>
 
 ################################################################################
@@ -34,22 +34,22 @@
 function Helper-LoadBitTitanModule()
 {
     if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement" -ErrorAction SilentlyContinue) -ne $null))
-	{
-		return;
-	}
+    {
+        return;
+    }
 
     $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
-	$moduleLocations = @("$currentPath\BitTitanPowerShell.dll", "$env:ProgramFiles\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll",  "${env:ProgramFiles(x86)}\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll")
-	foreach ($moduleLocation in $moduleLocations)
-	{
-		if (Test-Path $moduleLocation)
-		{
-			Import-Module -Name $moduleLocation
-			return
-		}
-	}
-	
-	Write-Error "BitTitanPowerShell module was not loaded"
+    $moduleLocations = @("$currentPath\BitTitanPowerShell.dll", "$env:ProgramFiles\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll",  "${env:ProgramFiles(x86)}\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll")
+    foreach ($moduleLocation in $moduleLocations)
+    {
+        if (Test-Path $moduleLocation)
+        {
+            Import-Module -Name $moduleLocation
+            return
+        }
+    }
+    
+    Write-Error "BitTitanPowerShell module was not loaded"
 }
 
 ################################################################################

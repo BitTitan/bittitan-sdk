@@ -1,38 +1,38 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			CreateAndRunRemoveCalendarItemsForOffboardingO365User.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			March 31, 2017
+    Company:		BitTitan, Inc.
+    Title:			CreateAndRunRemoveCalendarItemsForOffboardingO365User.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			March 31, 2017
 
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Instantiates and executes a Remove Calendar Items For Offboarding O365 User service.
+    Instantiates and executes a Remove Calendar Items For Offboarding O365 User service.
 
 .DESCRIPTION 	
-	This script is an example to show the creation and execution of MSPC services is programmable. This script will create a Remove Calendar Items For Offboarding O365 User offering instance with related task instances and tasktargets, complete the first two 
-	tasks with the input parameters, and submit the last task to AEF.
+    This script is an example to show the creation and execution of MSPC services is programmable. This script will create a Remove Calendar Items For Offboarding O365 User offering instance with related task instances and tasktargets, complete the first two 
+    tasks with the input parameters, and submit the last task to AEF.
 
 .INPUTS
     -[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
     -[guid] CustomerId, the id of the customer.
     -[string] EndPointName, the name of the endpoint to work with.
-	-[string] EndUserEmailAddressToOffboard, the end user to off board.
-	-[string] EndUserEmailAddressToRelocate, the end user to assign offboarded user resources to.
-	-[int] PageSize, the batch size of every retrieve request.
+    -[string] EndUserEmailAddressToOffboard, the end user to off board.
+    -[string] EndUserEmailAddressToRelocate, the end user to assign offboarded user resources to.
+    -[int] PageSize, the batch size of every retrieve request.
     -[string] Env, the context to work with. Valid options : BT, China.
 
 .EXAMPLE
-  	.\CreatePublicFolderPermissions.ps1 -Ticket -EndPointName -UserIdList -Env -CustomerId
-	Runs the script to instantiate and execute an O365 password reset service for the specific customer.
+    .\CreatePublicFolderPermissions.ps1 -Ticket -EndPointName -UserIdList -Env -CustomerId
+    Runs the script to instantiate and execute an O365 password reset service for the specific customer.
 #>
 
 param(
@@ -52,7 +52,7 @@ param(
     [Parameter(Mandatory=$True)]
     [string] $EndUserEmailAddressToOffboard,
 
-	# The email address of user to assign offboarded user resources to
+    # The email address of user to assign offboarded user resources to
     [Parameter(Mandatory=$True)]
     [string] $EndUserEmailAddressToRelocate,
 
@@ -102,7 +102,7 @@ $userToOffboard = Get-BT_CustomerEndUser -Ticket $scopedTicket -Environment $Env
 if (-not $userToOffboard) 
 { 
     Write-Error "There does not exist an user with email address $EndUserEmailAddressToOffboard."
-	return
+    return
 }
 
 # Retrieve the user assign resources
@@ -110,7 +110,7 @@ $userToRelocate = Get-BT_CustomerEndUser -Ticket $scopedTicket -Environment $Env
 if (-not $userToRelocate) 
 { 
     Write-Error "There does not exist an user with email address $EndUserEmailAddressToRelocate."
-	return
+    return
 }
 
 # Retrieve offering metadata id for O365 User Password Reset
@@ -121,8 +121,8 @@ $offeringMetadataId = $offeringMetadata.Id
 [void]($offeringInstance = Add-BT_OfferingInstance -Ticket $scopedTicket -Environment $Env -OfferingMetadataId $offeringMetadataId)
 if (-not $offeringInstance)
 {
-	Write-Error "Fail to create offering."
-	return
+    Write-Error "Fail to create offering."
+    return
 }
 
 # Retrieve the task instances with pagination
@@ -147,8 +147,8 @@ Write-Verbose "Totally $($taskInstances.Count) tasks retrieved."
 # Order the task instances by Execution order         
 if (-not $taskInstances)
 {
-	Write-Error "Fail to create tasks."
-	return
+    Write-Error "Fail to create tasks."
+    return
 }                                                                                                                                                                                                             
 $taskInstances = $taskInstances | Sort-Object ExecutionOrder
 

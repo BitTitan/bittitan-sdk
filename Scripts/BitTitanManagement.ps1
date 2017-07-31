@@ -1,30 +1,30 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			BitTitanManagement.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			DECEMBER 1, 2016
+    Company:		BitTitan, Inc.
+    Title:			BitTitanManagement.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			DECEMBER 1, 2016
 
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Provides a set of console tools for MigrationWiz.
+    Provides a set of console tools for MigrationWiz.
 
 .DESCRIPTION 	
-	This script provides a set of tools to manage migration projects, local exchange servers, G Suite and Office365. 
+    This script provides a set of tools to manage migration projects, local exchange servers, G Suite and Office365. 
 
 .INPUTS	
 
 .EXAMPLE
-  	.\BitTitanManagement.ps1
-	Launches the MigrationWiz console tool.
+    .\BitTitanManagement.ps1
+    Launches the MigrationWiz console tool.
 #>
 
 $connectorPageSize = 100
@@ -1090,9 +1090,9 @@ function Helper-WriteDebug([string]$line)
 function Helper-LoadMigrationWizModule()
 {
     if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement") -ne $null))
-	{
-		return;
-	}
+    {
+        return;
+    }
 
     $currentPath = Split-Path -parent -Path $script:MyInvocation.MyCommand.Definition
     $moduleFilename = "$currentPath\BitTitanPowerShell.dll"

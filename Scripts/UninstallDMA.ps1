@@ -1,33 +1,33 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			UninstallDMA.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			March 28, 2017
+    Company:		BitTitan, Inc.
+    Title:			UninstallDMA.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			March 28, 2017
 
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Updates the desired state of all customerDevices to uninstalled.
+    Updates the desired state of all customerDevices to uninstalled.
 
 .DESCRIPTION 	
-	To uninstall DMA, we need to update the desired state of corresponding customerDevice entity. This script takes in a customer id and flips all the customerDevice entities 
+    To uninstall DMA, we need to update the desired state of corresponding customerDevice entity. This script takes in a customer id and flips all the customerDevice entities 
     for the given customer. The environment is restricted to production. 
 
 .INPUTS
-	-[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
-	-[guid] CustomerId, the id of the customer to report.
-	-[string] Env, the context to work with. Valid options : BT, China.
+    -[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
+    -[guid] CustomerId, the id of the customer to report.
+    -[string] Env, the context to work with. Valid options : BT, China.
 
 .EXAMPLE
-  	.\UninstallDMA.ps1 -Ticket -customerId '12345678-0000-0000-0000-000000000000'
+    .\UninstallDMA.ps1 -Ticket -customerId '12345678-0000-0000-0000-000000000000'
 #>
 param(    
     # Ticket 
@@ -37,9 +37,9 @@ param(
     # Customer Id
     [Parameter(Mandatory=$True, ValueFromPipeline=$True)]
     [guid] $CustomerId,
-	
-	# Env
-	[Parameter(Mandatory=$False)]
+    
+    # Env
+    [Parameter(Mandatory=$False)]
     [ValidateSet("BT", "China")]
     [string] $Env = "BT"
 ) 

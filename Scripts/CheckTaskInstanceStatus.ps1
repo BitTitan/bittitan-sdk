@@ -1,25 +1,25 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			CheckTaskInstanceStatus.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			DECEMBER 8, 2016
+    Company:		BitTitan, Inc.
+    Title:			CheckTaskInstanceStatus.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			DECEMBER 8, 2016
 
-	Exchange Version:	2016
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Exchange Version:	2016
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2016 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2016 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Gets the status for given Task instance.
+    Gets the status for given Task instance.
 
 .DESCRIPTION 	
-	This script tries to retrieve the task instance by input id, and returns its status. 
+    This script tries to retrieve the task instance by input id, and returns its status. 
 
 .INPUTS
     -[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
@@ -27,11 +27,11 @@
     -[string] Env, the context to work with. Valid options : BT, China.
 
 .OUTPUTS
-	[ManagementProxy.ManagementService.TaskStatus]
-	
+    [ManagementProxy.ManagementService.TaskStatus]
+    
 .EXAMPLE
-  	.\CreatePublicFolderPermissions.ps1 -Ticket -TaskInstanceId 
-	Runs the script and outputs the status of the specified task instance.
+    .\CreatePublicFolderPermissions.ps1 -Ticket -TaskInstanceId 
+    Runs the script and outputs the status of the specified task instance.
 #>
 
 param(

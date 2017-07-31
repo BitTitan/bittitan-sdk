@@ -1,52 +1,52 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			ReportDMAAgentStatus.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			March 30, 2017
+    Company:		BitTitan, Inc.
+    Title:			ReportDMAAgentStatus.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			March 30, 2017
 
-	Exchange Version:	2016
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Exchange Version:	2016
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Reports the DMA agent status per device, possible status could be installing, uninstalling, uninstalled, running, etc.
+    Reports the DMA agent status per device, possible status could be installing, uninstalling, uninstalled, running, etc.
 
 .DESCRIPTION 	
-	Retrieves the customerDevices for given customer and report the agent status.
+    Retrieves the customerDevices for given customer and report the agent status.
 
 .INPUTS
-	-[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
-	-[guid] CustomerId, the id of the customer to report.
-	-[string] Csv, the csv output path.
-	-[string] Env, the context to work with. Valid options : BT, China.
+    -[ManagementProxy.ManagementService.Ticket] Ticket, the ticket for authentication.
+    -[guid] CustomerId, the id of the customer to report.
+    -[string] Csv, the csv output path.
+    -[string] Env, the context to work with. Valid options : BT, China.
 
 .EXAMPLE
-  	.\ReportDMAAgentStatus.ps1 -Ticket -customerId '12345678-0000-0000-0000-000000000000'
+    .\ReportDMAAgentStatus.ps1 -Ticket -customerId '12345678-0000-0000-0000-000000000000'
 #>
 param(    
     # Ticket 
-	[Parameter(Mandatory=$True)]
-	[ManagementProxy.ManagementService.Ticket] $Ticket,
+    [Parameter(Mandatory=$True)]
+    [ManagementProxy.ManagementService.Ticket] $Ticket,
 
     # Customer Id
-	[Parameter(Mandatory=$True, ValueFromPipeline=$True)]
-	[guid] $CustomerId,
+    [Parameter(Mandatory=$True, ValueFromPipeline=$True)]
+    [guid] $CustomerId,
 
-	# Csv
-	[Parameter(Mandatory=$False)]
-	[string] $Csv = ".\DMAStatusReport-$CustomerId.csv",
+    # Csv
+    [Parameter(Mandatory=$False)]
+    [string] $Csv = ".\DMAStatusReport-$CustomerId.csv",
 
-	# Env
-	[Parameter(Mandatory=$False)]
-	[ValidateSet("BT", "China")]
-	[string] $Env = "BT"
+    # Env
+    [Parameter(Mandatory=$False)]
+    [ValidateSet("BT", "China")]
+    [string] $Env = "BT"
 ) 
 
 # Retrieve the customer
