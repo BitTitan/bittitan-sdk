@@ -1,49 +1,49 @@
 ﻿<#
 .NOTES
-	Company:		BitTitan, Inc.
-	Title:			GetLastMailboxMigration.PS1
-	Author:			SUPPORT@BITTITAN.COM
-	Requirements: 
-	
-	Version:		1.00
-	Date:			April 19, 2017
+    Company:		BitTitan, Inc.
+    Title:			GetLastMailboxMigration.PS1
+    Author:			SUPPORT@BITTITAN.COM
+    Requirements: 
+    
+    Version:		1.00
+    Date:			April 19, 2017
 
-	Exchange Version:	2016
-	Windows Version:	WINDOWS 10 ENTERPRISE
+    Exchange Version:	2016
+    Windows Version:	WINDOWS 10 ENTERPRISE
 
-	Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
+    Disclaimer: 	This script is provided ‘AS IS’. No warranty is provided either expresses or implied.
 
-	Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
-	
+    Copyright: 		Copyright © 2017 BitTitan. All rights reserved.
+    
 .SYNOPSIS
-	Retrieves the last mailbox migration entities for every mailbox.
+    Retrieves the last mailbox migration entities for every mailbox.
 
 .DESCRIPTION 	
-	This script retrieves the last executed mailbox migration entity for every single mailbox of the given connector.
+    This script retrieves the last executed mailbox migration entity for every single mailbox of the given connector.
 
 .INPUTS
-	-[MigrationProxy.WebApi.Ticket] Ticket, the ticket for authentication.
+    -[MigrationProxy.WebApi.Ticket] Ticket, the ticket for authentication.
     -[guid] ConnectorId, the id of the mailbox connector.
     -[string] Env, the context to work with. Valid options : BT, China.
 
 .EXAMPLE
-  	.\GetLastMailboxMigration.ps1 -Ticket $MWTicket -ConnectorId '12345678-0000-0000-0000-000000000000' -Env 'BT' 
-	Runs the script and outputs the last started mailbox migrations for each mailbox within connector 12345678-0000-0000-0000-000000000000.
+    .\GetLastMailboxMigration.ps1 -Ticket $MWTicket -ConnectorId '12345678-0000-0000-0000-000000000000' -Env 'BT' 
+    Runs the script and outputs the last started mailbox migrations for each mailbox within connector 12345678-0000-0000-0000-000000000000.
 #>
 
 param(
     # Ticket for authentication
-	[Parameter(Mandatory=$True)]
-	[MigrationProxy.WebApi.Ticket] $Ticket,
+    [Parameter(Mandatory=$True)]
+    [MigrationProxy.WebApi.Ticket] $Ticket,
 
-	# The id of the connector
-	[Parameter(Mandatory=$True)]
-	[guid] $ConnectorId,
+    # The id of the connector
+    [Parameter(Mandatory=$True)]
+    [guid] $ConnectorId,
    
     # The environment to work with
-	[Parameter(Mandatory=$False)]
-	[ValidateSet("BT", "China")]
-	[string] $Env = "BT"
+    [Parameter(Mandatory=$False)]
+    [ValidateSet("BT", "China")]
+    [string] $Env = "BT"
 ) 
 
 # Set page size
