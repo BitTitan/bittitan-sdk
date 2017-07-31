@@ -1089,6 +1089,11 @@ function Helper-WriteDebug([string]$line)
 
 function Helper-LoadMigrationWizModule()
 {
+    if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement") -ne $null))
+	{
+		return;
+	}
+
     $currentPath = Split-Path -parent -Path $script:MyInvocation.MyCommand.Definition
     $moduleFilename = "$currentPath\BitTitanPowerShell.dll"
     if((Helper-LoadModule -name "BitTitanPowerShell" -filename $moduleFilename -fatal $false) -eq $false)

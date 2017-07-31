@@ -53,10 +53,7 @@ param(
     [Parameter(Mandatory=$False)]
     [ValidateSet("BT", "China")]
     [string] $Env = "BT"
-) 
-
-$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
-Import-Module "$currentPath\BitTitanPowerShell.dll"
+)
 
 ################################################################################
 # Joins two objects

@@ -65,7 +65,7 @@ function PauseMigration
 
 function Import-MigrationWizModule()
 {
-	if ((Get-Module -Name "BitTitanPowerShell") -ne $null)
+	if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement" -ErrorAction SilentlyContinue) -ne $null))
 	{
 		return;
 	}

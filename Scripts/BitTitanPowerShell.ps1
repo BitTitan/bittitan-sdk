@@ -27,8 +27,30 @@
 	Imports the BitTitanPowerShell.dll into the context.
 #>
 
-$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
-Import-Module "$currentPath\BitTitanPowerShell.dll"
+################################################################################
+# Load the BitTitan PowerShell Module
+################################################################################
+
+function Helper-LoadBitTitanModule()
+{
+    if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement" -ErrorAction SilentlyContinue) -ne $null))
+	{
+		return;
+	}
+
+    $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
+	$moduleLocations = @("$currentPath\BitTitanPowerShell.dll", "$env:ProgramFiles\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll",  "${env:ProgramFiles(x86)}\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll")
+	foreach ($moduleLocation in $moduleLocations)
+	{
+		if (Test-Path $moduleLocation)
+		{
+			Import-Module -Name $moduleLocation
+			return
+		}
+	}
+	
+	Write-Error "BitTitanPowerShell module was not loaded"
+}
 
 ################################################################################
 # Display MigrationWiz Commands Shortcut
@@ -36,7 +58,14 @@ Import-Module "$currentPath\BitTitanPowerShell.dll"
 
 function Get-MigrationWizCommands
 {
-	Get-Command -Module BitTitanPowerShell
+    if ((Get-InstalledModule -Name "BitTitanManagement" -ErrorAction SilentlyContinue) -ne $null) 
+    {
+        Get-Command -Module BitTitanManagement
+    }
+    else
+    {
+        Get-Command -Module BitTitanPowerShell
+    }
 }
 
 ################################################################################
@@ -82,6 +111,7 @@ function Helper-IncreaseWindowSize([int]$width, [int]$height)
 # Display Instructions
 ################################################################################
 
+Helper-LoadBitTitanModule
 Helper-IncreaseWindowSize 120 50
 
 Write-Host
