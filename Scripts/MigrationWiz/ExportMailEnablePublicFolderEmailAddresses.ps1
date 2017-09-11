@@ -1,4 +1,4 @@
-## export-mail-enabled-public-folder-email-addresses.ps1 ##
+## ExportMailEnablePublicFolderEmailAddresses.ps1 ##
 ###########################################################
 
 # declare the results array

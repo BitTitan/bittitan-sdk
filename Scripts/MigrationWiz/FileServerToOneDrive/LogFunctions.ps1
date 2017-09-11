@@ -8,7 +8,7 @@
 # and include the following lines into the calling script
 #-> including a separate Function-File for logging
 #-> $directorypath = Split-Path $MyInvocation.MyCommand.Path 
-#-> $incFunctions = $directorypath + "\Logging_Functions.ps1"  
+#-> $incFunctions = $directorypath + "\LogFunctions.ps1"  
 #-> $logfile = $directorypath + "\Migration.log"                            #The name of the log file, may be changed
 #-> . $incFunctions                                                         # use the . syntax to include the functions file 
 #

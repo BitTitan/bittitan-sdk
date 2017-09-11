@@ -2,7 +2,7 @@
 <#
 .NOTES
 	Company:		BitTitan, Inc.
-	Title:			DmaCleanAndUpdateV4.PS1
+	Title:			DmaCleanAndUpdate.PS1
 	Author:			SUPPORT@BITTITAN.COM
 	Requirements: 
 	
@@ -20,7 +20,7 @@
     This script must be run as an Administrator
 
 .EXAMPLE
-    .\DmaCleanAndUpdateV4.ps1 
+    .\DmaCleanAndUpdate.ps1 
 #>
 
 $ErrorActionPreference = "Stop"

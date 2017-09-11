@@ -1,4 +1,4 @@
-## import-mail-enabled-public-folder-email-addresses.ps1 ##
+## ImportMailEnablePublicFolderEmailAddresses.ps1 ##
 ###########################################################
 
 # check if a file has been passed in 
