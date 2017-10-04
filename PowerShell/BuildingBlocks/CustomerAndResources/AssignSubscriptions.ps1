@@ -5,7 +5,7 @@
 $customerEndUsers =  Get-BT_CustomerEndUser -Ticket $mspc.CustomerTicket -OrganizationId $mspc.Customer.OrganizationId -IsDeleted $False -PageSize 100
 if ( $customerEndUsers ) {
     # Check for existing subscriptions
-    $existingSubscriptions = Get-BT_Subscription -Ticket $mspc.WorkgroupTicket -SubscriptionEntityReferenceType "CustomerEndUser" -EntityReferenceId $customerEndUsers.Id -IsDeleted $False
+    $existingSubscriptions = Get-BT_Subscription -Ticket $mspc.WorkgroupTicket -SubscriptionEntityReferenceType CustomerEndUser -EntityReferenceId $customerEndUsers.Id -IsDeleted $False
     
     # Filter out end users who already have a subscription
     $customerEndUsersToSubscribe = $customerEndUsers | Where {
