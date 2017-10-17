@@ -16,43 +16,60 @@ if ($Clear) {
 $InformationPreference = 'Continue'
 $DebugPreference = 'Continue'
 
+# Stop on any error
+$ErrorActionPreference = "Stop"
+
 # Logging
 Write-Information "Initializing BitTitan Automated Task Environment"
 Write-Debug "Customer: $Customer."
 
 # Load BitTitan PowerShell module, if it has not been loaded already
 if (-not (Get-Module "BitTitanPowerShell")) {
-    Import-Module 'C:\Program Files (x86)\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll' -ErrorAction Stop
+    Import-Module 'C:\Program Files (x86)\BitTitan\BitTitan PowerShell\BitTitanPowerShell.dll'
 }
 
-# Initialize the context variables
-if (-not $global:mspc) {
-    # Initialize the context
-    $global:mspc = @{}
-    $mspc.Data = @{}
+try {
+    # Initialize the context variables
+    if (-not $global:mspc) {
+        # Initialize the context
+        $global:mspc = @{}
+        $mspc.Data = @{}
     
-    # Get credentials
-    if (-not $global:creds) {
-        $global:creds = Get-Credential -Message "Enter BitTitan credentials"
-    }
+        # Get credentials
+        if (-not $global:creds) {
+            $global:creds = Get-Credential -Message "Enter BitTitan credentials"
+        }
    
-    # Initialize the base ticket
-    $mspc.Ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
+        # Initialize the base ticket
+        $mspc.Ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
      
-    # Prompt for workgroup
-    $workgroupId = [GUID](Read-Host -Prompt 'Workgroup ID')
+        # Prompt for workgroup
+        $workgroupId = [GUID](Read-Host -Prompt 'Workgroup ID')
 
-    # Retrieve customer and workgroup
-    if ($Customer) {
-        $customerId = [GUID](Read-Host -Prompt 'Customer ID')    
-        $mspc.Customer = Get-BT_Customer -Ticket $mspc.Ticket -Id $customerId
-    }
-    $mspc.Workgroup = Get-BT_Workgroup -Ticket $mspc.Ticket -Id $workgroupId
+        # Retrieve customer and workgroup
+        if ($Customer) {
+            $customerId = [GUID](Read-Host -Prompt 'Customer ID')    
+            $mspc.Customer = Get-BT_Customer -Ticket $mspc.Ticket -Id $customerId
+        }
+        $mspc.Workgroup = Get-BT_Workgroup -Ticket $mspc.Ticket -Id $workgroupId
 
-    # Initialize the additional tickets
-    if ($Customer) {
-        $mspc.CustomerTicket = Get-BT_Ticket -Ticket $mspc.Ticket -OrganizationId $mspc.Customer.OrganizationId
+        if (-not $mspc.Workgroup) {
+            Write-Error "Workgroup with id: $workgroupId does not exist."
+        }
+
+        # Initialize the additional tickets
+        if ($Customer) {
+            $mspc.CustomerTicket = Get-BT_Ticket -Ticket $mspc.Ticket -OrganizationId $mspc.Customer.OrganizationId
+        }
+        $mspc.WorkgroupTicket = Get-BT_Ticket -Ticket $mspc.Ticket -OrganizationId $mspc.Workgroup.WorkgroupOrganizationId -WorkgroupId $mspc.Workgroup.Id
+        $mspc.MigrationWizTicket = Get-MW_Ticket -Credentials $creds
     }
-    $mspc.WorkgroupTicket = Get-BT_Ticket -Ticket $mspc.Ticket -OrganizationId $mspc.Workgroup.WorkgroupOrganizationId
-    $mspc.MigrationWizTicket = Get-MW_Ticket -Credentials $creds
+}
+catch {
+    # Clear the global variables since there was an error
+    $global:mspc = $null
+    $global:creds = $null
+
+    # Throw the original exception
+    throw
 }
