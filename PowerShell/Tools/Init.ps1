@@ -61,7 +61,7 @@ try {
         if ($Customer) {
             $mspc.CustomerTicket = Get-BT_Ticket -Ticket $mspc.Ticket -OrganizationId $mspc.Customer.OrganizationId
         }
-        $mspc.WorkgroupTicket = Get-BT_Ticket -Ticket $mspc.Ticket -OrganizationId $mspc.Workgroup.WorkgroupOrganizationId
+        $mspc.WorkgroupTicket = Get-BT_Ticket -Ticket $mspc.Ticket -OrganizationId $mspc.Workgroup.WorkgroupOrganizationId -WorkgroupId $mspc.Workgroup.Id
         $mspc.MigrationWizTicket = Get-MW_Ticket -Credentials $creds
     }
 }
