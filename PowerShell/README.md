@@ -16,7 +16,7 @@ Download the [MSI](https://www.bittitan.com/downloads/bittitanpowershellsetup.ms
 ## Contents
 * `/BuildingBlocks (Building Blocks)` - Samples to help developers build scripts that automate various operations.
 * `/Support (Support Scripts)` - Scripts that enable developers to address specific scenarios or self-troubleshoot issues.
-* `/TaskLibrary (Task Library)` - Scripts that are invoked within MSPComplete (coming soon). Click [here] for more information about writing and using automation scripts. 
+* `/TaskLibrary (Task Library)` - Scripts that are invoked within MSPComplete (coming soon). Click [here](https://help.bittitan.com/hc/en-us/articles/115013395648-Writing-and-Using-Automation-Scripts) for more information about writing and using automation scripts. 
 * `/Tools (Tools)` - Utility and console tool scripts.
 
 ## Init Script
