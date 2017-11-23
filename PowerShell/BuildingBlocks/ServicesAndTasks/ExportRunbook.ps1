@@ -1,5 +1,5 @@
 # Initialize variables
-$offeringMetadataId = Read-Host -Prompt 'Runbook ID'
+$offeringMetadataId = [GUID](Read-Host -Prompt 'Runbook ID')
 $folderPath = Read-Host -Prompt 'Folder path to export to'
 
 # Authenticate

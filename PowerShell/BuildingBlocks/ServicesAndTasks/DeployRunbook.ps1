@@ -1,5 +1,5 @@
 ﻿# Initialize variables
-$offeringMetadataId = Read-Host -Prompt 'Runbook ID'
+$offeringMetadataId = [GUID](Read-Host -Prompt 'Runbook ID')
 $customerId = [GUID](Read-Host -Prompt 'Customer ID')    
 
 # Authenticate
@@ -13,4 +13,4 @@ $customerTicket = Get-BT_Ticket -Ticket $ticket -OrganizationId $customer.Organi
 
 # Deploy the runbook
 Add-BT_OfferingInstance -Ticket $customerTicket -OfferingMetadataId $offeringMetadataId
-Write-Warning "Deployed runbook: $offeringMetadataId to customer: $($customer.CompanyName)."
+Write-Verbose "Deployed runbook: $offeringMetadataId to customer: $($customer.CompanyName)."
