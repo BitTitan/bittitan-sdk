@@ -172,7 +172,7 @@ function MW-GetMailboxHistory([MigrationProxy.WebApi.Mailbox]$mailbox)
         try
         {
             $attempts++
-            $history = @(Get-MW_MailboxMigration -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -FilterBy_Guid_MailboxId $mailbox.Id)
+            $history = @(Get-MW_MailboxMigration -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -FilterBy_Guid_MailboxId $mailbox.Id -SortBy_CreateDate_Ascending)
             return ,$history
         }
         catch
