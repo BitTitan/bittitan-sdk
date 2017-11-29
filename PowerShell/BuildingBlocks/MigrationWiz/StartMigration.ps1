@@ -14,5 +14,5 @@ $mailboxes = Get-MW_Mailbox -Ticket $mwTicket -ConnectorId $connector.Id -Retrie
     # Start a migration for each item
     # -Type indicates the type of migration, e.g. Trial, Full, etc.
     # -ItemTypes indicates what item types to migrate, e.g. Contact, Calendar, etc. If not specified, all item types will be migrated.
-    $migration = Add-MW_MailboxMigration -Ticket $mwTicket -ConnectorId $connector.Id -MailboxId $_.Id -UserId $mwTicket.UserId -Type Full -ItemTypes Contact   
+    $migration = Add-MW_MailboxMigration -Ticket $mwTicket -ConnectorId $connector.Id -MailboxId $_.Id -UserId $mwTicket.UserId -Type Trial -ItemTypes Contact   
 }

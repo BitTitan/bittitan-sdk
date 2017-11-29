@@ -21,7 +21,7 @@ $importConfiguration = New-Object -TypeName MigrationProxy.WebApi.ExchangeConfig
         "UseAdministrativeCredentials" = $false;
         "ExchangeItemType" = "Mail";
 }
-
+git a
 # Create a new project
 $connector = Add-MW_MailboxConnector -Ticket $mwTicket -ProjectType Mailbox -ExportType ExchangeServer -ImportType Office365 `
     -Name "TestProject" -UserId $mwTicket.UserId -OrganizationId $customer.OrganizationId `
