@@ -1,4 +1,6 @@
-﻿# Authenticate
+﻿# This script shows how to assign subscriptions to customer end users
+
+# Authenticate
 $creds = Get-Credential -Message "Enter BitTitan credentials"
 $ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
      

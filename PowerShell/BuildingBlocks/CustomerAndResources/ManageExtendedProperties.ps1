@@ -1,5 +1,5 @@
-# This script illustrate how to manage extended properties on entities
-# Extended properties can be added to various entities. Examples include 'Customer', 'CustomerDevice', 'CustomerEndUser'.
+# This script illustrates how to manage extended properties on entities
+# Extended properties can be added to various entities. Examples include 'Customer', 'CustomerDevice' and 'CustomerEndUser'.
 
 # Authenticate
 $creds = Get-Credential -Message "Enter BitTitan credentials"

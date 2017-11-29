@@ -1,11 +1,13 @@
-﻿# Initialize variables
-$primaryDomain = "an-it-company.com"
-$companyName = "IT Company"
-$countryName = "Italy" # Optional
+﻿# This script illustrates how to create a customer
 
 # Authenticate
 $creds = Get-Credential -Message "Enter BitTitan credentials"
 $ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
+
+# Initialize variables
+$primaryDomain = "an-it-company.com"
+$companyName = "IT Company"
+$countryName = "Italy" # Optional
 
 # Retrieve the workgroup that the customer should be created under
 $workgroupId = [GUID](Read-Host -Prompt 'Workgroup ID')    
