@@ -10,19 +10,18 @@ $customer = Get-BT_Customer -Ticket $ticket -CompanyName "Default"
 
 # In this example, we create a mailbox project from Exchange Server to O365
 # Set up export and import configurations
+# You can also choose to provide admin credentials and set UseAdministrativeCredentials to true, then you do not need to provide usernames and passwords in mailbox creation.
 $exportConfiguration = New-Object -TypeName MigrationProxy.WebApi.ExchangeConfiguration -Property @{
         "UseAdministrativeCredentials" = $false;
         "Url" = "https://exchange-server-url.com";
         "ExchangeItemType" = "Mail";
 }
-# You can choose to provide admin credentials and set UseAdministrativeCredentials to true, then you do not need to provide usernames and passwords in mailbox creation.
-
 $importConfiguration = New-Object -TypeName MigrationProxy.WebApi.ExchangeConfiguration -Property @{
         "UseAdministrativeCredentials" = $false;
         "ExchangeItemType" = "Mail";
 }
-git a
-# Create a new project
+
+# Create the project
 $connector = Add-MW_MailboxConnector -Ticket $mwTicket -ProjectType Mailbox -ExportType ExchangeServer -ImportType Office365 `
     -Name "TestProject" -UserId $mwTicket.UserId -OrganizationId $customer.OrganizationId `
     -ExportConfiguration $exportConfiguration -ImportConfiguration $importConfiguration
