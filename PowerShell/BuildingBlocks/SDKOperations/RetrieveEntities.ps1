@@ -1,11 +1,18 @@
-# Initialize the context
-# Create a customer scoped ticket
-.\Init.ps1 -Customer
+# This script shows different ways to retrieve entities
+
+# Authenticate
+$creds = Get-Credential -Message "Enter BitTitan credentials"
+$ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
+
+# Retrieve a customer and get a ticket for it
+$customerId = [GUID](Read-Host -Prompt 'Customer ID') 
+$customer = Get-BT_Customer -Ticket $ticket -Id $customerId
+$customerTicket = Get-BT_Ticket -Ticket $ticket -OrganizationId $customer.OrganizationId
 
 # Here are 3 common ways to retrieve entities
 # 1. Retrieve all the endpoints under a customer and process them one by one
 # Use -RetrieveAll and piping with ForEach 
-Get-BT_Endpoint -Ticket $mspc.CustomerTicket -RetrieveAll | ForEach {
+Get-BT_Endpoint -Ticket $customerTicket -IsDeleted False -RetrieveAll | ForEach {
     # Process each endpoint retrieved
     Write-Host $_.Name
 }
@@ -16,7 +23,7 @@ $pageSize = 100
 $count = 0
 While( $true ) {   
     # Retrieve endpoints in batch
-    [array]$batch = Get-BT_Endpoint -Ticket $mspc.CustomerTicket -PageOffset $($count * $pageSize)
+    [array]$batch = Get-BT_Endpoint -Ticket $customerTicket -IsDeleted False -PageOffset $($count * $pageSize)
     if ( -not $batch ) { 
         break
     }
@@ -27,7 +34,7 @@ While( $true ) {
     }
 
     # Send update request
-    Set-BT_Endpoint -Ticket $mspc.CustomerTicket -Endpoint $batch
+    Set-BT_Endpoint -Ticket $customerTicket -Endpoint $batch
 
     # Increase count
     $count ++
@@ -36,5 +43,5 @@ While( $true ) {
 # 3. Retrieve all the endpoints under a customer to get certain info, e.g. count 
 # Use -RetrieveAll
 # Note: This is the least efficient way among the 3 cases since it loads all the entities into the memory
-$endpoints = Get-BT_Endpoint -Ticket $mspc.CustomerTicket -RetrieveAll
+$endpoints = Get-BT_Endpoint -Ticket $customerTicket -IsDeleted False -RetrieveAll
 $endpoints.Count

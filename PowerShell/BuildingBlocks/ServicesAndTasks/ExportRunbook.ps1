@@ -1,12 +1,12 @@
-param(
-    [Parameter(Mandatory=$true)]
-    [guid]$OfferingMetadataId,
+# This script shows how to export a runbook to a file
 
-    [Parameter(Mandatory=$true)]
-    [string]$FolderPath)
+# Authenticate
+$creds = Get-Credential -Message "Enter BitTitan credentials"
+$ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
 
-# Initialize the context
-.\Init.ps1
+# Initialize variables
+$offeringMetadataId = [GUID](Read-Host -Prompt 'Runbook ID')
+$folderPath = Read-Host -Prompt 'Folder path to export to'
 
-# Export the Runbook to FolderPath
-Export-BT_OfferingMetadata -Ticket $mspc.Ticket -OfferingMetadataId $OfferingMetadataId -FolderPath $FolderPath
+# Export the runbook to FolderPath
+Export-BT_OfferingMetadata -Ticket $ticket -OfferingMetadataId $offeringMetadataId -FolderPath $folderPath
