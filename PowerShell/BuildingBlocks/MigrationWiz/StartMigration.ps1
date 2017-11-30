@@ -13,6 +13,6 @@ $connector = Get-MW_MailboxConnector -Ticket $mwTicket -Name "TestProject"
 $mailboxes = Get-MW_Mailbox -Ticket $mwTicket -ConnectorId $connector.Id -RetrieveAll | ForEach {
     # Start a migration for each item
     # -Type indicates the type of migration, e.g. Trial, Full, etc.
-    # -ItemTypes indicates what item types to migrate, e.g. Contact, Calendar, etc. If not specified, all item types will be migrated.
+    # -ItemTypes indicates what item types to migrate, e.g. Contact, Calendar, etc. If it is not specified, all item types will be migrated.
     $migration = Add-MW_MailboxMigration -Ticket $mwTicket -ConnectorId $connector.Id -MailboxId $_.Id -UserId $mwTicket.UserId -Type Trial -ItemTypes Contact   
 }
