@@ -8,10 +8,10 @@ $ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
 $customer = Get-BT_Customer -Ticket $ticket -CompanyName "Default"
 $customerTicket = Get-BT_Ticket -Ticket $ticket -OrganizationId $customer.OrganizationId
 
-# Retrieve and delete a single endpoint under that customer
-$endpoint = Get-BT_Endpoint -Ticket $customerTicket -Name "Test Endpoint" -IsDeleted false
+# Retrieve and delete a single endpoint
+$endpoint = Get-BT_Endpoint -Ticket $customerTicket -Name "Test Endpoint" -IsDeleted False
 Remove-BT_Endpoint -Ticket $customerTicket -Id $endpoint.Id
 
-# Retrieve and delete multiple endpoints under that customer
-$endpoints = Get-BT_Endpoint -Ticket $customerTicket -Name @("Endpoint 1", "Endpoint 2") -IsDeleted false
+# Retrieve and delete multiple endpoints
+$endpoints = Get-BT_Endpoint -Ticket $customerTicket -Name @("Endpoint 1", "Endpoint 2") -IsDeleted False
 Remove-BT_Endpoint -Ticket $customerTicket -Id $endpoints.Id

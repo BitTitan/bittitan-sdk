@@ -9,7 +9,8 @@ $customer = Get-BT_Customer -Ticket $ticket -CompanyName "Default"
 $customerTicket = Get-BT_Ticket -Ticket $ticket -OrganizationId $customer.OrganizationId
 
 # Retrieve and update a single endpoint
-$endpoint = Get-BT_Endpoint -Ticket $customerTicket -Name "Endpoint1" -IsDeleted false
+# In this example, we update the endpoint's name
+$endpoint = Get-BT_Endpoint -Ticket $customerTicket -Name "Endpoint1" -IsDeleted False
 $endpoint = Set-BT_Endpoint -Ticket $customerTicket -Endpoint $endpoint -Name "Endpoint1 updated"
 Write-Output $endpoint
 
@@ -19,7 +20,7 @@ $endpoint = Set-BT_Endpoint -Ticket $customerTicket -Endpoint $endpoint
 Write-Output $endpoint
 
 # Retrieve and update multiple endpoints
-$endpoints = Get-BT_Endpoint -Ticket $customerTicket -Name @("Endpoint2", "Endpoint3") -IsDeleted false
+$endpoints = Get-BT_Endpoint -Ticket $customerTicket -Name @("Endpoint2", "Endpoint3") -IsDeleted False
 $endpoints | ForEach {
     $_.Name += " updated"
 }
