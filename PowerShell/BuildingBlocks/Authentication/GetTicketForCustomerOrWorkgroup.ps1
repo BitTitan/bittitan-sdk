@@ -4,14 +4,14 @@
 
 # Authenticate
 $creds = Get-Credential
-$ticket = Get-BT_Ticket -Credentials $credentials -ServiceType BitTitan
+$ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan
 
-# 1) Get a ticket for a customer
+# 1) Get a ticket scoped to a customer
 $customerId = [GUID](Read-Host -Prompt 'Customer ID')  
 $customer = Get-BT_Customer -Ticket $ticket -Id $customerId
 $customerTicket = Get-BT_Ticket -Ticket $ticket -OrganizationId $customer.OrganizationId
 
-# 2) Get a ticket for a workgroup
+# 2) Get a ticket scoped to a workgroup
 $workgroupId = [GUID](Read-Host -Prompt 'Workgroup ID')  
 $workgroup = Get-BT_Workgroup -Ticket $ticket -Id $workgroupId
 $workgroupTicket = Get-BT_Ticket -Ticket $ticket -OrganizationId $workgroup.WorkgroupOrganizationId
