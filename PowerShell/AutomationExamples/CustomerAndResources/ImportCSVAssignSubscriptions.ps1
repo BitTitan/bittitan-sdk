@@ -1,8 +1,10 @@
-﻿# Get credentials
-$cred = Get-Credential -Message "Enter Your MSPC/MigrationWiz Credentials"
+﻿# This script shows how to import users from a CSV and assign subscriptions to them
+
+# Get credentials
+$creds = Get-Credential -Message "Enter BitTitan credentials"
 
 # Get ticket
-$ticket = Get-BT_Ticket -Credentials $Cred -ServiceType BitTitan -Environment "BT"
+$ticket = Get-BT_Ticket -Credentials $creds -ServiceType BitTitan -Environment "BT"
 
 # Get customer and its workgroup
 $customerId = [GUID](Read-Host -Prompt 'Customer ID')   
@@ -21,7 +23,7 @@ $productSkuId = Get-BT_ProductSkuId -Ticket $ticket -ProductName MspcEndUserYear
 
 # Import the CSV and process each line
 # Variable names correspond to the column names in the csv
-Import-Csv -Path $CSVPath | ForEach-Object {
+Import-Csv -Path $CSVPath | ForEach {
    
     # Create customer end user
     $customerEndUser = Add-BT_CustomerEndUser -Ticket $customerTicket -PrimaryEmailAddress $_.PrimaryEmailAddress -FirstName $_.FirstName -LastName $_.LastName -PrimaryIdentity $_.PrimaryIdentity
