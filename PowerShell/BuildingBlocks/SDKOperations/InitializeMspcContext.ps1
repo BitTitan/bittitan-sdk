@@ -11,5 +11,3 @@ Initialize-MSPC_Context -Credentials $credentials -WorkgroupId 'your workgroup I
 # Case 3: Clear the existing global $mspc context
 # Note: clears the existing $mspc context before creating a new mspc context.
 Initialize-MSPC_Context -Clear
-
-(INNER JOIN MailboxConnectors SecurityMailboxConnectors_Mailbox WITH (NOLOCK) ON Mailbox.ConnectorId = SecurityMailboxConnectors_Mailbox.ConnectorId AND (SecurityMailboxConnectors_Mailbox.IsDeleted <> @SecurityConnectorIsDeleted0))
