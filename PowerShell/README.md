@@ -19,36 +19,36 @@ Download the [MSI](https://www.bittitan.com/downloads/bittitanpowershellsetup.ms
 * `/AutomatedTaskScripts (Automated Task Scripts)` - Scripts that are invoked within MSPComplete (coming soon). Click [here](https://help.bittitan.com/hc/en-us/articles/115013395648-Writing-and-Using-Automation-Scripts) for more information about writing and using automation scripts. 
 * `/Tools (Tools)` - Utility and console tool scripts.
 
-## Init Script
-All scripts within the BuildingBlocks folder utilize the Init.ps1 script. The script initializes important variables used when invoking BitTitan cmdlets and users will only be prompted for input the first time they invoke the script. Any subsequent invocation will use the cached variables.
-Invoking the script is as simple as follows:
+## Initialize-MSPC_Context
+Use the Initialize-MSPC_Context cmdlet to create a global mspc context, which contains a number of useful fields:
 
-```powershell
-.\Init.ps1
-```
-
-After invoking the script, it will ask for the following:
-* The credentials of the BitTitan account.
-* The id of the Workgroup being associated to the ticket. For more information about Workgroups, please see [MSPComplete concepts](https://www.bittitan.com/doc/powershell.html#PagePowerShellmspcmd-overview).
-
-The follow switches can also be used:
-
-```powershell
-# Clears the saved global variables and prompts the user for new input during the next invocation
-.\Init.ps1 -Clear
-
-# Prompts for the Customer id and initializes customer related variables
-.\Init.ps1 -Customer
-```
-
-Initalized Variables
 * `$mspc.Ticket` - Represents an unscoped ticket used for **BT** cmdlets.
 * `$mspc.CustomerTicket` - Represents a ticket scoped to a Customer and is used for **BT** cmdlets.
 * `$mspc.WorkgroupTicket` - Represents a ticket scoped to a Workgroup and is used for **BT** cmdlets.
 * `$mspc.MigrationWizTicket` - Represents a ticket used for **MW** cmdlets.
 * `$mspc.Customer` - Represents the Customer retrieved using the id passed to the Init script.
 * `$mspc.Workgroup` - Represents the Workgroup retrieved using the id passed to the Init script.
+* `$mspc.Data` - Represents hashtable that stores global data.
 
+The $mspc context object created by this cmdlet is identical to the $mspc variable available to every script running on the MSPC automation platform. 
+Thus it is recommended to run the Initialize-MSPC_Context cmdlet before testing Runbook scripts locally.
+Since the $mspc context created is a global variable, it is useful when debugging a single script or multiple scripts as you do not need to enter credentials and variable inputs each time.
+
+The follow switches can also be used:
+
+```powershell
+# Case 1: Initialize an mspc context with a customer ID
+# Note: the customer's workgroup is used in creating both the workgroup and workgroup ticket.
+Initialize-MSPC_Context -Credentials $credentials -CustomerId 'your customer ID here'
+
+# Case 2: Initialize an mspc context with a workgroup ID
+# Note: no customer nor customer ticket are created in this case.
+Initialize-MSPC_Context -Credentials $credentials -WorkgroupId 'your workgroup ID here'
+
+# Case 3: Clear the existing global $mspc context
+# Note: clears the existing $mspc context before creating a new mspc context.
+Initialize-MSPC_Context -Clear
+```
 More information about [MigrationWiz concepts](https://www.bittitan.com/doc/powershell.html#PagePowerShellmigrationwizmd) and [MSPComplete concepts](https://www.bittitan.com/doc/powershell.html#PagePowerShellmspcmd-overview) exist on the BitTitan website.
 
 ## Documentation 
