@@ -701,7 +701,6 @@ function MWHelper-CreateMailboxes($connector, [string]$pfListCsvPath)
 
 function GoogleHelper-GetDomainUsers([string]$domainName)
 {
-    Write-Host -Object "poop"
     $users = Get-MigrationWizGoogleUserAccounts -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -DomainName $domainName
     return $users
 }
@@ -1089,7 +1088,7 @@ function Helper-WriteDebug([string]$line)
 
 function Helper-LoadMigrationWizModule()
 {
-    if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement") -ne $null))
+    if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement" -ErrorAction SilentlyContinue) -ne $null))
     {
         return;
     }
