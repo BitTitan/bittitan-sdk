@@ -701,7 +701,6 @@ function MWHelper-CreateMailboxes($connector, [string]$pfListCsvPath)
 
 function GoogleHelper-GetDomainUsers([string]$domainName)
 {
-    Write-Host -Object "poop"
     $users = Get-MigrationWizGoogleUserAccounts -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -DomainName $domainName
     return $users
 }
