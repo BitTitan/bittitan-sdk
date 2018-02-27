@@ -1089,7 +1089,7 @@ function Helper-WriteDebug([string]$line)
 
 function Helper-LoadMigrationWizModule()
 {
-    if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement") -ne $null))
+    if (((Get-Module -Name "BitTitanPowerShell") -ne $null) -or ((Get-InstalledModule -Name "BitTitanManagement" -ErrorAction SilentlyContinue) -ne $null))
     {
         return;
     }
