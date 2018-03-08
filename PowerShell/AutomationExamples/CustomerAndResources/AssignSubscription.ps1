@@ -59,7 +59,7 @@ if (-not $Ticket.IsPrivileged)
 }
 
 # Get workgroup
-$workgroup = Get-BT_Workgroup -Ticket $ticket -FilterBy_Guid_Id $WorkGroupId -Environment $Env -FilterBy_Boolean_IsDeleted $False
+$workgroup = Get-BT_Workgroup -Ticket $ticket -Id $WorkGroupId -Environment $Env -IsDeleted $False
 if (-not $workgroup) {
     Write-Error "Workgroup $WorkGroupId does not exist for given ticket, aborted."
     return
@@ -70,7 +70,7 @@ $count = 0
 $customers = New-Object System.Collections.ArrayList
 While($true)
 {    
-    [array]$temp =  Get-BT_Customer -Ticket $ticket -FilterBy_Guid_WorkgroupId $workgroup.Id -Environment $Env -FilterBy_Boolean_IsDeleted $False -PageOffset $($count*$PageSize) -PageSize $PageSize
+    [array]$temp =  Get-BT_Customer -Ticket $ticket -WorkgroupId $workgroup.Id -Environment $Env -IsDeleted $False -PageOffset $($count*$PageSize) -PageSize $PageSize
     $customers.AddRange($temp)
     if ($temp.count -lt $PageSize) { break } 
     $count++
@@ -87,7 +87,7 @@ foreach($customer in $customers)
     $customerEndUsers = New-Object System.Collections.ArrayList
     While($true)
     {    
-        [array]$temp =  Get-BT_CustomerEndUser -Ticket $ticket -FilterBy_Guid_OrganizationId $customer.OrganizationId -Environment $Env -FilterBy_Boolean_IsDeleted $False -PageOffset $($count*$PageSize) -PageSize $PageSize
+        [array]$temp =  Get-BT_CustomerEndUser -Ticket $ticket -OrganizationId $customer.OrganizationId -Environment $Env -IsDeleted $False -PageOffset $($count*$PageSize) -PageSize $PageSize
         $customerEndUsers.AddRange($temp)
         if ($temp.count -lt $PageSize) { break } 
         $count++
@@ -98,5 +98,5 @@ foreach($customer in $customers)
 
     # Assign subscription to each customer end user
     # ProductSkuId used here is the id of 1-year subscription product
-    $customerEndUsers | %{ Add-BT_Subscription -Ticket $upgradedTicket -SubscriptionEntityReferenceType CustomerEndUser -EntityReferenceId $_.Id -ProductSkuId $productId -Environment $Env -WorkgroupOrganizationId $workgroup.WorkgroupOrganizationId }
+    $customerEndUsers | %{ Add-BT_Subscription -Ticket $upgradedTicket -ReferenceEntityType CustomerEndUser -ReferenceEntityId $_.Id -ProductSkuId $productId -Environment $Env -WorkgroupOrganizationId $workgroup.WorkgroupOrganizationId }
 }
