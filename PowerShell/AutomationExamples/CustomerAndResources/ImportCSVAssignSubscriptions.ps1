@@ -29,5 +29,5 @@ Import-Csv -Path $CSVPath | ForEach {
     $customerEndUser = Add-BT_CustomerEndUser -Ticket $customerTicket -PrimaryEmailAddress $_.PrimaryEmailAddress -FirstName $_.FirstName -LastName $_.LastName -PrimaryIdentity $_.PrimaryIdentity
     
     # Assign subscription
-    Add-BT_Subscription -Ticket $workgroupTicket -SubscriptionEntityReferenceType CustomerEndUser -EntityReferenceId $customerEndUser.Id -ProductSkuId $productSkuId 
+    Add-BT_Subscription -Ticket $workgroupTicket -ReferenceEntityType CustomerEndUser -ReferenceEntityId $customerEndUser.Id -ProductSkuId $productSkuId 
 } 

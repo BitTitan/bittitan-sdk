@@ -17,11 +17,11 @@ $workgroupTicket = Get-BT_Ticket -Ticket $ticket -OrganizationId $workgroup.Work
 $customerEndUsers =  Get-BT_CustomerEndUser -Ticket $customerTicket -IsDeleted $False -PageSize 100
 if ( $customerEndUsers ) {
     # Check for existing subscriptions
-    $existingSubscriptions = Get-BT_Subscription -Ticket $workgroupTicket -SubscriptionEntityReferenceType CustomerEndUser -EntityReferenceId $customerEndUsers.Id -IsDeleted $False
+    $existingSubscriptions = Get-BT_Subscription -Ticket $workgroupTicket -ReferenceEntityType CustomerEndUser -ReferenceEntityId $customerEndUsers.Id -IsDeleted $False
     
     # Filter out end users who already have a subscription
     $customerEndUsersToSubscribe = $customerEndUsers | Where {
-        $existingSubscriptions.EntityReferenceId -notcontains $_.Id 
+        $existingSubscriptions.ReferenceEntityId -notcontains $_.Id 
     }
     
     # Get the product sku id for the MSPC yearly subscription
@@ -29,7 +29,7 @@ if ( $customerEndUsers ) {
 
     # Assign subscriptions to each customer end user
     $customerEndUsersToSubscribe | ForEach {
-        Add-BT_Subscription -Ticket $workgroupTicket -SubscriptionEntityReferenceType CustomerEndUser -EntityReferenceId $_.Id -ProductSkuId $productSkuId 
+        Add-BT_Subscription -Ticket $workgroupTicket -ReferenceEntityType CustomerEndUser -ReferenceEntityId $_.Id -ProductSkuId $productSkuId 
     }
     $assignedSubscriptionCount = $customerEndUsersToSubscribe.Length
     Write-Verbose "Successfully assigned subscription to $assignedSubscriptionCount end users."
