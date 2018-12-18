@@ -1,0 +1,3 @@
+SourceEmailAddress,DestinationEmailAddress
+userOne@sourcedomain.com,user.1@destinationdomain.com
+userTwo@sourcedomain.com,user.2@destinationdomain.com
