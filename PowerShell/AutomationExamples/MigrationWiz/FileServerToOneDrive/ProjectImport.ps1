@@ -254,30 +254,31 @@ TRY
                 $oneDriveProConfiguration.AzureStorageAccountName = $azureConfiguration.AdministrativeUsername
                 $oneDriveProConfiguration.AzureAccountKey = $azureConfiguration.AccessKey
 
-                $destinationEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name "OD4B v2 PS" -FilterBy_Boolean_IsDeleted false
-              
+                $destinationEndpointName = "OD4B v2 PS"
+                $destinationEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name $destinationEndpointName -FilterBy_Boolean_IsDeleted false              
                 
                 if (!$destinationEndpoint)
                 {
-                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint OD4B v2 PS"
-                    $destinationEndpoint = Add-BT_Endpoint -Ticket $t -Name "OD4B v2 PS" -Type "OneDriveProAPI" -Configuration $oneDriveProConfiguration
-                    Log-Write -LogPath $logfile -LineValue "Endpoint OD4B v2 PS created"
+                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint $destinationEndpointName"
+                    $destinationEndpoint = Add-BT_Endpoint -Ticket $t -Name $destinationEndpointName -Type "OneDriveProAPI" -Configuration $oneDriveProConfiguration
+                    Log-Write -LogPath $logfile -LineValue "Endpoint $destinationEndpointName created"
                 }
                 else
                 {
-                    Log-Write -LogPath $logfile -LineValue "Found Endpoint OD4B v2 PS"
+                    Log-Write -LogPath $logfile -LineValue "Found Endpoint $destinationEndpointName"
                 }
 
-                $sourceEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name "HomeDrive PS" -FilterBy_Boolean_IsDeleted false
+                $sourceEndpointName = "HomeDrive PS"
+                $sourceEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name $sourceEndpointName -FilterBy_Boolean_IsDeleted false
                 if (!$sourceEndpoint)
                 {
-                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint HomeDrive PS"
-                    $sourceEndpoint = Add-BT_Endpoint -Ticket $t -Name "HomeDrive PS" -Type "AzureFileSystem" -Configuration $azureConfiguration
-                    Log-Write -LogPath $logfile -LineValue "Endpoint HomeDrive PS created"                 
+                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint $sourceEndpointName"
+                    $sourceEndpoint = Add-BT_Endpoint -Ticket $t -Name $sourceEndpointName -Type "AzureFileSystem" -Configuration $azureConfiguration
+                    Log-Write -LogPath $logfile -LineValue "Endpoint $sourceEndpointName created"                 
                 }
                 else
                 {
-                    Log-Write -LogPath $logfile -LineValue "Found Endpoint HomeDrive PS" 
+                    Log-Write -LogPath $logfile -LineValue "Found Endpoint $sourceEndpointName" 
                 }
 
                 $MWazureConfiguration = New-Object -TypeName           'MigrationProxy.WebApi.AzureConfiguration'
