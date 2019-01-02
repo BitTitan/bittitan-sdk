@@ -16,10 +16,10 @@ $devices = Get-BT_CustomerDevice -Ticket $customerTicket -PageSize 10
 $devices | ForEach {
     # Retrieve the information for each user
     $deviceName = $_.DeviceName
-    $deviceUserInfos = Get-BT_CustomerDeviceUserInfo -Ticket $customerTicket -DeviceId $_.Id
+    $deviceUsers = Get-BT_CustomerDeviceUser -Ticket $customerTicket -DeviceId $_.Id
     
     # Retrieve the corresponding end user information and print the agent status
-    $deviceUserInfos | ForEach {
+    $deviceUsers | ForEach {
         $endUser = Get-BT_CustomerEndUser -Ticket $customerTicket -Id $_.EndUserId
         Write-Output "$($deviceName): $($endUser.PrimaryEmailAddress) - $($_.AgentStatus)"
     }
