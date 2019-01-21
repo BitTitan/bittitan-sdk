@@ -70,11 +70,28 @@ $exportEndpointId = Select-MSPC_Endpoint -CustomerOrganizationId $customerOrgani
 #Get source endpoint credentials
 [PSObject]$exportEndpointData = Get-MSPC_EndpointData -CustomerOrganizationId $customerOrganizationId -EndpointId $exportEndpointId 
 
+write-host
 
-#Select destination endpoint
-$importEndpointId = Select-MSPC_Endpoint -CustomerOrganizationId $customerOrganizationId -ExportOrImport "destination" -EndpointType "OneDriveProAPI"
-#Get source endpoint credentials
-[PSObject]$importEndpointData = Get-MSPC_EndpointData -CustomerOrganizationId $customerOrganizationId -EndpointId $importEndpointId 
+$od4bv2 = $false
+do {
+    $confirm = (Read-Host -prompt "Do you want to use the new OneDrive For Business v2 endpoint (it requires an Azure subscription)?  [Y]es or [N]o")
+
+    if($confirm.ToLower() -eq "y") {
+        $od4bv2 = $true    
+
+        #Select destination endpoint
+        $importEndpointId = Select-MSPC_Endpoint -CustomerOrganizationId $customerOrganizationId -ExportOrImport "destination" -EndpointType "OneDriveProAPI"
+        #Get source endpoint credentials
+        [PSObject]$importEndpointData = Get-MSPC_EndpointData -CustomerOrganizationId $customerOrganizationId -EndpointId $importEndpointId 
+    }
+    else {
+        #Select destination endpoint
+        $importEndpointId = Select-MSPC_Endpoint -CustomerOrganizationId $customerOrganizationId -ExportOrImport "destination" -EndpointType "OneDrivePro"
+        #Get source endpoint credentials
+        [PSObject]$importEndpointData = Get-MSPC_EndpointData -CustomerOrganizationId $customerOrganizationId -EndpointId $importEndpointId 
+    }
+
+} while(($confirm.ToLower() -ne "y") -and ($confirm.ToLower() -ne "n"))
 
 #Create a PSCredential object to connect to Azure Active Directory tenant
 $administrativeUsername = $importEndpointData.AdministrativeUsername
@@ -127,8 +144,6 @@ Catch [Exception] {
     Exit
 }
 
-
- 
 #Create AzureFileSystem-OneDriveProAPI Document project
 Write-Host
 $msg = "INFO: Creating MigrationWiz FileServer to OneDrive For Business project."
@@ -139,7 +154,12 @@ $destinationDomain = @((Get-MsolDomain).Name)[0]
 $ProjectName = "FS-OD4B-$destinationDomain-$(Get-Date -Format yyyyMMddHHmm)"
 $ProjectType = "Storage"   
 $exportType = "AzureFileSystem" 
-$importType = "OneDriveProAPI"
+if($od4bv2) {
+    $importType = "OneDriveProAPI"
+}
+else {
+    $importType = "OneDrivePro"
+}
 
 $exportEndpointId = $exportEndpointId
 $importEndpointId = $importEndpointId
@@ -151,18 +171,28 @@ $exportConfiguration = New-Object -TypeName $exportTypeName -Property @{
     "UseAdministrativeCredentials" = $true
 }
 
-$importTypeName = "MigrationProxy.WebApi.SharePointOnlineConfiguration"
-$importConfiguration = New-Object -TypeName $importTypeName -Property @{
-    "AdministrativeUsername" = $importEndpointData.AdministrativeUsername;
-    "AdministrativePassword" = $importEndpointData.AdministrativePassword;
-    "AzureAccountKey" = $importEndpointData.AzureAccountKey;
-    "AzureStorageAccountName" = $importEndpointData.AzureStorageAccountName;
-    "UseAdministrativeCredentials" = $true
+if($od4bv2) {
+    $importTypeName = "MigrationProxy.WebApi.SharePointOnlineConfiguration"
+    $importConfiguration = New-Object -TypeName $importTypeName -Property @{
+        "AdministrativeUsername" = $importEndpointData.AdministrativeUsername;
+        "AdministrativePassword" = $importEndpointData.AdministrativePassword;
+        "AzureAccountKey" = $importEndpointData.AzureAccountKey;
+        "AzureStorageAccountName" = $importEndpointData.AzureStorageAccountName;
+        "UseAdministrativeCredentials" = $true
+    }
+}
+else{
+    $importTypeName = "MigrationProxy.WebApi.SharePointOnlineConfiguration"
+    $importConfiguration = New-Object -TypeName $importTypeName -Property @{
+        "AdministrativeUsername" = $importEndpointData.AdministrativeUsername;
+        "AdministrativePassword" = $importEndpointData.AdministrativePassword;
+        "UseAdministrativeCredentials" = $true
+    }
 }
 
-#$advancedOptions = "InitializationTimeout=28800000 RenameConflictingFiles=1 ShrinkFoldersMaxLength=200"
+#$advancedOptions = "InitializationTimeout=8 RenameConflictingFiles=1 ShrinkFoldersMaxLength=200"
 
-$advancedOptions = "InitializationTimeout=28800000 RenameConflictingFiles=1 IncreasePathLengthLimit=1"
+$advancedOptions = "InitializationTimeout=8 RenameConflictingFiles=1 IncreasePathLengthLimit=1 SyncItems=1"
 
 $connectorId = Create-MW_Connector -CustomerOrganizationId $customerOrganizationId `
 -ProjectName $ProjectName `

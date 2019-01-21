@@ -199,7 +199,7 @@ foreach ($group in $groups) {
     if ($alreadyCreated -eq $false) {
 
         #$ProjectName = "Mailbox-$groupName"
-        $ProjectName = "Mailbox-O365 Groups conversations"
+        $ProjectName = "NGA HR-Mailbox-O365 Groups conversations"
         $projectTypeName = "MigrationProxy.WebApi.ExchangeConfiguration"
         $ProjectType = "Mailbox"
         $importType = "ExchangeOnline2"
@@ -319,7 +319,7 @@ foreach ($group in $groups) {
 
 #Create O365 Group Document project
     
-    $ProjectName = "Document-$groupName"
+    $ProjectName = "NGA HR-Document-$groupName"
     $ProjectType = "Storage"    
     $importType = "Office365Groups"
     $exportType = "Office365Groups"
@@ -342,7 +342,7 @@ foreach ($group in $groups) {
         "UseAdministrativeCredentials" = $true
     }
 
-    $AdvancedOptions = "InitializationTimeout=28800000 FolderLimit=20000 SyncItems=1"
+    $AdvancedOptions = "Tags=IpLockDown! InitializationTimeout=28800000 FolderLimit=20000 IncreasePathLengthLimit=1 SyncItems=1"
 
     $connectorId = Create-MW_Connector -CustomerOrganizationId $customerOrganizationId `
     -ProjectName $ProjectName `
@@ -354,7 +354,8 @@ foreach ($group in $groups) {
     -exportConfiguration $exportConfiguration `
     -importConfiguration $importConfiguration `
     -advancedOptions $advancedOptions `
-    -maximumSimultaneousMigrations 100
+    -maximumSimultaneousMigrations 100 `
+    -MaxLicensesToConsume 10
     
     try {
         $ImportLibrary = "Shared Documents"

@@ -164,7 +164,7 @@ Set-Content -Path $batFile -Value $batchFileCode -Encoding ASCII
 $result = Check-BlobContainer -BlobContainerName "batchfile" -StorageAccount $storageAccount
 
 if(!$result) {
-    Create-BlobContainer -BlobContainerName "batchfile" -StorageAccount $storageAccount -PermissionsOff  $true 
+    Create-BlobContainer -BlobContainerName "batchfile" -StorageAccount $storageAccount 
 }
 
 # upload the batch file

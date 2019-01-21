@@ -112,7 +112,7 @@ Write-Host $msg
 Log-Write -Message $msg -LogFile $logFile
 
 if($connectorsFromCSVFile -ne $null -and $connectorsFromCSVFile.Length -ge 1) {
-    Write-Host -ForegroundColor Green "SUCCESS: $($connectorsFromCSVFile.Length) Groups MigrationWiz projects found:" 
+    Write-Host -ForegroundColor Green "SUCCESS: $($connectorsFromCSVFile.Length) Office 365 Groups MigrationWiz projects found:" 
 
     for ($i=0; $i -lt $connectorsFromCSVFile.Length; $i++) {
         $connectorFromCSVFile = $connectorsFromCSVFile[$i]
@@ -146,8 +146,8 @@ foreach ($connectorFromCSVFile in $connectorsFromCSVFile) {
     }
 }
 
-$allMailboxes = @()
 $mailboxes = @()
+$allMailboxes = @()
 foreach ($connector in $connectors) {
     # Retrieve all mailboxes from the specified project
     $mailboxOffSet = 0

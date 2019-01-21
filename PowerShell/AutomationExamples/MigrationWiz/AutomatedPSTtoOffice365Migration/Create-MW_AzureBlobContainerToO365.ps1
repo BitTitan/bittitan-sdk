@@ -45,7 +45,7 @@ $logDirName = "LOGS"
 $logDir = "$workingDir\$logDirName"
 
 #Log file
-$logFileName = "$(Get-Date -Format yyyyMMdd)_Create-MW_FileServerToOD4B.log"
+$logFileName = "$(Get-Date -Format yyyyMMdd)_Create-MW_Create-MW_AzureBlobContainerToO365.log"
 $global:logFile = "$logDir\$logFileName"
 
 Create-Working-Directory -workingDir $workingDir -logDir $logDir
@@ -94,6 +94,18 @@ else {
     $containerName = $exportEndpointData.ContainerName
 }
 
+$target="Mailbox"
+do { 
+    $confirm = (Read-Host -prompt "Do you want to migrate to mailbox or to archive?  [M]ailbox or [A]rchive")    
+    if($confirm.ToLower() -eq "a") {
+        $target="Archive"
+    }
+    elseif($confirm.ToLower() -eq "m") {
+        $target="Mailbox"
+    }
+
+} while(($confirm.ToLower() -ne "m") -and ($confirm.ToLower() -ne "a"))
+
 $exportType = "Pst"
 $exportTypeName = "MigrationProxy.WebApi.AzureConfiguration"
 $exportConfiguration = New-Object -TypeName $exportTypeName -Property @{
@@ -110,7 +122,8 @@ $importConfiguration = New-Object -TypeName $importTypeName -Property @{
     "Url" = $importEndpointData.Url;
     "AdministrativeUsername" = $importEndpointData.AdministrativeUsername;
     "AdministrativePassword" = $importEndpointData.AdministrativePassword;
-    "UseAdministrativeCredentials" = $true
+    "UseAdministrativeCredentials" = $true;
+    "ExchangeItemType" = $target
 }
 $importEndpointId = $importEndpointId
 
