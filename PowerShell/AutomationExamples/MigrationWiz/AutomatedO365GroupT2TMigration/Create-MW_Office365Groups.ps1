@@ -199,7 +199,7 @@ foreach ($group in $groups) {
     if ($alreadyCreated -eq $false) {
 
         #$ProjectName = "Mailbox-$groupName"
-        $ProjectName = "NGA HR-Mailbox-O365 Groups conversations"
+        $ProjectName = "HR-Mailbox-O365 Groups conversations"
         $projectTypeName = "MigrationProxy.WebApi.ExchangeConfiguration"
         $ProjectType = "Mailbox"
         $importType = "ExchangeOnline2"
@@ -226,6 +226,22 @@ foreach ($group in $groups) {
             $vanityDomains = @(Get-VanityDomains -Credentials $o365Credentials)
 
             if(!$vanityDomains -and $global:destinationDomains.count -eq 1) {
+
+                $recipientMapping += "RecipientMapping=`"@$sourceDomain->@$global:destinationDomains`""
+
+                $msg = "INFO: Since you are migrating to a different domain but with same email prefixes, this '$recipientMapping' will be applied."
+                Write-Host $msg
+                Log-Write -Message $msg -LogFile $logFile
+            }
+            elseif($vanityDomains -and $vanityDomains.count -eq 1 -and $global:destinationDomains.count -eq 1) {
+            
+                $recipientMapping += "RecipientMapping=`"@$sourceDomain->@$vanityDomains`""
+
+                $msg = "INFO: Since you are migrating to the same email addresses, this '$recipientMapping' will be applied."
+                Write-Host $msg
+                Log-Write -Message $msg -LogFile $logFile
+            }
+            elseif($vanityDomains -and $vanityDomains.count -gt 1 -and $global:destinationDomains.count -eq 1) {
             
                 $recipientMapping += "RecipientMapping=`"@$sourceDomain->@$global:destinationDomains`""
 
@@ -233,7 +249,7 @@ foreach ($group in $groups) {
                 Write-Host $msg
                 Log-Write -Message $msg -LogFile $logFile
             }
-            else {
+            elseif($vanityDomains.count -gt 1 -or $global:destinationDomains.count -gt 1) { 
                 $msg = "ACTION: Since you are migrating to the same email addresses but there are several domains, please select the RecipientMapping CSV file with SourceEmailAddress and DestinationEmailAddress."
                 Write-Host -ForegroundColor Yellow $msg
                 Log-Write -Message $msg -LogFile $logFile  
@@ -254,7 +270,7 @@ foreach ($group in $groups) {
                 Write-Host $msg
                 Log-Write -Message $msg -LogFile $logFile
             }
-            elseif($vanityDomains -and $vanityDomains.count -eq 1){
+            elseif($vanityDomains -and $vanityDomains.count -eq 1 -and $global:destinationDomains.count -eq 1){
             
                 $recipientMapping += "RecipientMapping=`"@$sourceDomain->@$vanityDomains`""
             
@@ -262,7 +278,15 @@ foreach ($group in $groups) {
                 Write-Host $msg
                 Log-Write -Message $msg -LogFile $logFile
             }
-            else {
+            elseif($vanityDomains -and $vanityDomains.count -gt 1 -and $global:destinationDomains.count -eq 1){
+            
+                $recipientMapping += "RecipientMapping=`"@$sourceDomain->@$global:destinationDomains`""
+            
+                $msg = "INFO: Since you are migrating to a different domain but with same email prefixes, this '$recipientMapping' will be applied."
+                Write-Host $msg
+                Log-Write -Message $msg -LogFile $logFile
+            }
+            elseif($vanityDomains.count -gt 1 -or $global:destinationDomains.count -gt 1) { 
                 $msg = "ACTION: Since you are migrating to different domain but with same email prefixes and there are several domains, please select the RecipientMapping CSV file with SourceEmailAddress and DestinationEmailAddress."
                 Write-Host -ForegroundColor Yellow $msg
                 Log-Write -Message $msg -LogFile $logFile
@@ -319,7 +343,7 @@ foreach ($group in $groups) {
 
 #Create O365 Group Document project
     
-    $ProjectName = "NGA HR-Document-$groupName"
+    $ProjectName = "HR-Document-$groupName"
     $ProjectType = "Storage"    
     $importType = "Office365Groups"
     $exportType = "Office365Groups"
@@ -342,7 +366,7 @@ foreach ($group in $groups) {
         "UseAdministrativeCredentials" = $true
     }
 
-    $AdvancedOptions = "Tags=IpLockDown! InitializationTimeout=28800000 FolderLimit=20000 IncreasePathLengthLimit=1 SyncItems=1"
+    $AdvancedOptions = "InitializationTimeout=28800000 FolderLimit=20000 IncreasePathLengthLimit=1"
 
     $connectorId = Create-MW_Connector -CustomerOrganizationId $customerOrganizationId `
     -ProjectName $ProjectName `
