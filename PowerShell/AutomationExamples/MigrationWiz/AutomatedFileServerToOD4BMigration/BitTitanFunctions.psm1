@@ -1681,7 +1681,8 @@ Function Create-MW_Connector {
         [parameter(Mandatory=$true)] [object]$importConfiguration,
         [parameter(Mandatory=$false)] [String]$advancedOptions,   
         [parameter(Mandatory=$false)] [String]$folderFilter,
-        [parameter(Mandatory=$false)] [String]$maximumSimultaneousMigrations  
+        [parameter(Mandatory=$false)] [String]$maximumSimultaneousMigrations=100,
+        [parameter(Mandatory=$false)] [String]$MaxLicensesToConsume=10   
         
     )
 
@@ -1703,7 +1704,8 @@ Function Create-MW_Connector {
         -MaximumDataTransferRateDuration 600000 `
         -MaximumSimultaneousMigrations $maximumSimultaneousMigrations `
         -PurgePeriod 180 `
-        -MaximumItemFailures 100 
+        -MaximumItemFailures 100 `
+        -MaxLicensesToConsume $MaxLicensesToConsume  
 
         $msg = "SUCCESS: Connector '$($connector.Name)' created." 
         write-Host -ForegroundColor Green $msg
