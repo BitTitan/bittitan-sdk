@@ -26,7 +26,7 @@
 #>
 
 
-# Function to authenticate to BitTitan SDK
+#Function to authenticate to BitTitan SDK
 Function Connect-BitTitan {
     [CmdletBinding()]
     # Authenticate
@@ -803,10 +803,10 @@ Function Select-MSPC_Endpoint {
 
         if($confirm.ToLower() -eq "y") {
             if ($endpointName -eq "") {
-                $endpointId = create-MSPC_Endpoint -CustomerOrganizationId $CustomerOrganizationId -ExportOrImport $exportOrImport -ExportOrImport $exportOrImport -EndpointType $endpointType -EndpointConfiguration $endpointConfiguration 
+                $endpointId = create-MSPC_Endpoint -CustomerOrganizationId $CustomerOrganizationId -ExportOrImport $exportOrImport -EndpointType $endpointType -EndpointConfiguration $endpointConfiguration 
             }
             else {
-                $endpointId = create-MSPC_Endpoint -CustomerOrganizationId $CustomerOrganizationId -ExportOrImport $exportOrImport -ExportOrImport $exportOrImport -EndpointType $endpointType -EndpointConfiguration $endpointConfiguration -EndpointName $endpointName
+                $endpointId = create-MSPC_Endpoint -CustomerOrganizationId $CustomerOrganizationId -ExportOrImport $exportOrImport -EndpointType $endpointType -EndpointConfiguration $endpointConfiguration -EndpointName $endpointName
             }
             Return $endpointId
         }
@@ -850,6 +850,32 @@ Function Get-MSPC_EndpointData {
             $endpointCredentials | Add-Member -MemberType NoteProperty -Name AdministrativeUsername -Value $endpoint.AdministrativeUsername
 
             return $endpointCredentials        
+        }
+        elseif($endpoint.Type -eq "Gmail"){
+            $endpointCredentials = New-Object PSObject
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name Name -Value $endpoint.Name
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name UseAdministrativeCredentials -Value $endpoint.UseAdministrativeCredentials
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name AdministrativeUsername -Value $endpoint.AdministrativeUsername
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name Domains -Value $endpoint.Domains
+
+            return $endpointCredentials   
+        }
+        elseif($endpoint.Type -eq "GoogleDrive"){
+            $endpointCredentials = New-Object PSObject
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name Name -Value $endpoint.Name
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name AdminEmailAddress -Value $endpoint.AdminEmailAddress
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name Domains -Value $endpoint.Domains
+
+            return $endpointCredentials   
+        }
+        elseif($endpoint.Type -eq "OneDrivePro"){
+            $endpointCredentials = New-Object PSObject
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name Name -Value $endpoint.Name
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name UseAdministrativeCredentials -Value $endpoint.UseAdministrativeCredentials
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name AdministrativeUsername -Value $endpoint.AdministrativeUsername
+            $endpointCredentials | Add-Member -MemberType NoteProperty -Name AdministrativePassword -Value $endpoint.AdministrativePassword
+
+            return $endpointCredentials   
         }
         elseif($endpoint.Type -eq "OneDriveProAPI"){
             $endpointCredentials = New-Object PSObject
@@ -1166,6 +1192,235 @@ Function Create-MSPC_Endpoint {
             Log-Write -Message $_.Exception.Message -LogFile $logFile
         }  
     }
+    elseif($endpointType -eq "Gmail"){
+
+        #####################################################################################################################
+        # Prompt for endpoint data. 
+        #####################################################################################################################
+        if($endpointConfiguration -eq $null) {
+            if ($endpointName -eq "") {
+                do {
+                    $endpointName = (Read-Host -prompt "Please enter the $exportOrImport endpoint name").trim()
+                }while ($endpointName -eq "")
+            }
+
+            do {
+                $adminUsername = (Read-Host -prompt "Please enter the admin email address").trim()
+            }while ($adminUsername -eq "")
+        
+            $msg = "INFO: Admin email address is '$adminUsername'."
+            Write-Host $msg
+            Log-Write -Message $msg -LogFile $logFile
+
+            do {
+                $domains = (Read-Host -prompt "Please enter the domain or domains (separated by comma)").trim()
+            }while ($domains -eq "")
+        
+            $msg = "INFO: Domain(s) is (are) '$domains'."
+            Write-Host $msg
+            Log-Write -Message $msg -LogFile $logFile
+                         
+            #####################################################################################################################
+            # Create endpoint. 
+            #####################################################################################################################
+
+            $GoogleMailboxConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.GoogleMailboxConfiguration' -Property @{              
+                "UseAdministrativeCredentials" = $true;
+                "AdministrativeUsername" = $adminUsername;
+                "Domains" = $Domains;
+            }
+        }
+        else {
+            $GoogleMailboxConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.GoogleMailboxConfiguration' -Property @{              
+                "UseAdministrativeCredentials" = $true;
+                "AdministrativeUsername" = $endpointConfiguration.AdministrativeUsername;
+                "Domains" = $endpointConfiguration.Domains;
+            }
+        }
+
+        try {
+
+            $checkEndpoint = Get-BT_Endpoint -Ticket $CustomerTicket -Name $endpointName -Type $endpointType -IsDeleted False -IsArchived False 
+
+            if( $($checkEndpoint.Count -eq 0)) {
+
+                $endpoint = Add-BT_Endpoint -Ticket $CustomerTicket -Name $endpointName -Type $endpointType -Configuration $GoogleMailboxConfiguration
+
+                $msg = "SUCCESS: The $exportOrImport $endpointType endpoint '$endpointName' created."
+                Write-Host -ForegroundColor Green $msg
+                Log-Write -Message $msg -LogFile $logFile
+
+                Return $endpoint.Id
+            }
+            else {
+                $msg = "WARNING: $endpointType endpoint '$endpointName' already exists. Skipping endpoint creation."
+                Write-Host -ForegroundColor Yellow $msg
+                Log-Write -Message $msg -LogFile $logFile
+
+                Return $checkEndpoint.Id
+            }
+
+        }
+        catch {
+            $msg = "         ERROR: Failed to create the $exportOrImport $endpointType endpoint '$endpointName'."
+            Write-Host -ForegroundColor Red  $msg
+            Log-Write -Message $msg -LogFile $logFile
+            Write-Host -ForegroundColor Red $_.Exception.Message
+            Log-Write -Message $_.Exception.Message -LogFile $logFile               
+        }
+    }
+    elseif($endpointType -eq "GoogleDrive"){
+
+        #####################################################################################################################
+        # Prompt for endpoint data. 
+        #####################################################################################################################
+        if($endpointConfiguration -eq $null) {
+            if ($endpointName -eq "") {
+                do {
+                    $endpointName = (Read-Host -prompt "Please enter the $exportOrImport endpoint name").trim()
+                }while ($endpointName -eq "")
+            }
+
+            do {
+                $adminUsername = (Read-Host -prompt "Please enter the admin email address").trim()
+            }while ($adminUsername -eq "")
+        
+            $msg = "INFO: Admin email address is '$adminUsername'."
+            Write-Host $msg
+            Log-Write -Message $msg -LogFile $logFile
+
+            do {
+                $domains = (Read-Host -prompt "Please enter the domain or domains (separated by comma)").trim()
+            }while ($domains -eq "")
+        
+            $msg = "INFO: Domain(s) is (are) '$domains'."
+            Write-Host $msg
+            Log-Write -Message $msg -LogFile $logFile
+                         
+            #####################################################################################################################
+            # Create endpoint. 
+            #####################################################################################################################
+
+            $GoogleDriveConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.GoogleDriveConfiguration' -Property @{              
+                "AdminEmailAddress" = $adminUsername;
+                "Domains" = $Domains;
+            }
+        }
+        else {
+            $GoogleDriveConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.GoogleDriveConfiguration' -Property @{              
+                "AdminEmailAddress" = $endpointConfiguration.AdminEmailAddress;
+                "Domains" = $endpointConfiguration.Domains;
+            }
+        }
+
+        try {
+
+            $checkEndpoint = Get-BT_Endpoint -Ticket $CustomerTicket -Name $endpointName -Type $endpointType -IsDeleted False -IsArchived False 
+
+            if( $($checkEndpoint.Count -eq 0)) {
+
+                $endpoint = Add-BT_Endpoint -Ticket $CustomerTicket -Name $endpointName -Type $endpointType -Configuration $GoogleDriveConfiguration
+
+                $msg = "SUCCESS: The $exportOrImport $endpointType endpoint '$endpointName' created."
+                Write-Host -ForegroundColor Green $msg
+                Log-Write -Message $msg -LogFile $logFile
+
+                Return $endpoint.Id
+            }
+            else {
+                $msg = "WARNING: $endpointType endpoint '$endpointName' already exists. Skipping endpoint creation."
+                Write-Host -ForegroundColor Yellow $msg
+                Log-Write -Message $msg -LogFile $logFile
+
+                Return $checkEndpoint.Id
+            }
+
+        }
+        catch {
+            $msg = "         ERROR: Failed to create the $exportOrImport $endpointType endpoint '$endpointName'."
+            Write-Host -ForegroundColor Red  $msg
+            Log-Write -Message $msg -LogFile $logFile
+            Write-Host -ForegroundColor Red $_.Exception.Message
+            Log-Write -Message $_.Exception.Message -LogFile $logFile               
+        }
+    }
+    elseif($endpointType -eq "OneDrivePro"){
+
+        #####################################################################################################################
+        # Prompt for endpoint data. 
+        #####################################################################################################################
+        if($endpointConfiguration -eq $null) {
+            if ($endpointName -eq "") {
+                do {
+                    $endpointName = (Read-Host -prompt "Please enter the $exportOrImport endpoint name").trim()
+                }while ($endpointName -eq "")
+            }
+
+            do {
+                $adminUsername = (Read-Host -prompt "Please enter the admin email address").trim()
+            }while ($adminUsername -eq "")
+        
+            $msg = "INFO: Admin email address is '$adminUsername'."
+            Write-Host $msg
+            Log-Write -Message $msg -LogFile $logFile
+
+            do {
+                $adminPassword = (Read-Host -prompt "Please enter the admin password").trim()
+            }while ($adminPassword -eq "")
+        
+            $msg = "INFO: Admin password is '$adminPassword'."
+            Write-Host $msg
+            Log-Write -Message $msg -LogFile $logFile
+                         
+            #####################################################################################################################
+            # Create endpoint. 
+            #####################################################################################################################
+
+            $oneDriveProConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.SharePointOnlineConfiguration' -Property @{              
+                "UseAdministrativeCredentials" = $true;
+                "AdministrativeUsername" = $adminUsername;
+                "AdministrativePassword" = $adminPassword;
+            }
+        }
+        else {
+            $oneDriveProConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.SharePointOnlineConfiguration' -Property @{              
+                "UseAdministrativeCredentials" = $true;
+                "AdministrativeUsername" = $endpointConfiguration.AdministrativeUsername;
+                "AdministrativePassword" = $endpointConfiguration.AdministrativePassword;
+            }
+        }
+
+        try {
+
+            $checkEndpoint = Get-BT_Endpoint -Ticket $CustomerTicket -Name $endpointName -Type $endpointType -IsDeleted False -IsArchived False 
+
+            if( $($checkEndpoint.Count -eq 0)) {
+
+                $endpoint = Add-BT_Endpoint -Ticket $CustomerTicket -Name $endpointName -Type $endpointType -Configuration $oneDriveProConfiguration
+
+                $msg = "SUCCESS: The $exportOrImport $endpointType endpoint '$endpointName' created."
+                Write-Host -ForegroundColor Green $msg
+                Log-Write -Message $msg -LogFile $logFile
+
+                Return $endpoint.Id
+            }
+            else {
+                $msg = "WARNING: $endpointType endpoint '$endpointName' already exists. Skipping endpoint creation."
+                Write-Host -ForegroundColor Yellow $msg
+                Log-Write -Message $msg -LogFile $logFile
+
+                Return $checkEndpoint.Id
+            }
+
+        }
+        catch {
+            $msg = "         ERROR: Failed to create the $exportOrImport $endpointType endpoint '$endpointName'."
+            Write-Host -ForegroundColor Red  $msg
+            Log-Write -Message $msg -LogFile $logFile
+            Write-Host -ForegroundColor Red $_.Exception.Message
+            Log-Write -Message $_.Exception.Message -LogFile $logFile               
+        }
+    }
     elseif($endpointType -eq "OneDriveProAPI"){
 
         #####################################################################################################################
@@ -1188,7 +1443,7 @@ Function Create-MSPC_Endpoint {
 
             do {
                 $adminPassword = (Read-Host -prompt "Please enter the admin password").trim()
-            }while ($secretKey -eq "")
+            }while ($adminPassword -eq "")
         
             $msg = "INFO: Admin password is '$adminPassword'."
             Write-Host $msg
@@ -1294,7 +1549,7 @@ Function Create-MSPC_Endpoint {
 
             do {
                 $adminPassword = (Read-Host -prompt "Please enter the admin password").trim()
-            }while ($secretKey -eq "")
+            }while ($adminPassword -eq "")
         
             $msg = "INFO: Admin password is '$adminPassword'."
             Write-Host $msg
@@ -1426,7 +1681,8 @@ Function Create-MW_Connector {
         [parameter(Mandatory=$true)] [object]$importConfiguration,
         [parameter(Mandatory=$false)] [String]$advancedOptions,   
         [parameter(Mandatory=$false)] [String]$folderFilter,
-        [parameter(Mandatory=$false)] [String]$maximumSimultaneousMigrations  
+        [parameter(Mandatory=$false)] [String]$maximumSimultaneousMigrations=100,
+        [parameter(Mandatory=$false)] [String]$MaxLicensesToConsume=10   
         
     )
 
@@ -1448,7 +1704,8 @@ Function Create-MW_Connector {
         -MaximumDataTransferRateDuration 600000 `
         -MaximumSimultaneousMigrations $maximumSimultaneousMigrations `
         -PurgePeriod 180 `
-        -MaximumItemFailures 100 
+        -MaximumItemFailures 100 `
+        -MaxLicensesToConsume $MaxLicensesToConsume  
 
         $msg = "SUCCESS: Connector '$($connector.Name)' created." 
         write-Host -ForegroundColor Green $msg
@@ -1617,7 +1874,7 @@ Function Menu-MigrationSubmission() {
     elseif($ProjectName -match "PST-O365-"){
         Write-Host "4 - Specify the email address of the Office 365 mailbox."
     }
-    Write-Host "5 - All migrations that were not successful (failed or stopped)"
+    Write-Host "5 - All migrations that were not successful (failed, stopped or MaximumTransferReached)"
     Write-Host "x - Exit"
     Write-Host
 
@@ -1948,7 +2205,11 @@ Function Menu-MigrationSubmission() {
         }
 
         if($submit) { 
-               $migration = Add-MW_MailboxMigration -Ticket $mwTicket -MailboxId $mailbox.Id -ConnectorId $mailbox.ConnectorId -Type $migrationType -UserId $mwTicket.UserId -Priority 1 -Status Submitted -errorAction SilentlyContinue   
+                
+              $itemTypes =  "DocumentFile,Permissions"
+
+
+               $migration = Add-MW_MailboxMigration -Ticket $mwTicket -MailboxId $mailbox.Id -ConnectorId $mailbox.ConnectorId -Type $migrationType -UserId $mwTicket.UserId -Priority 1 -ItemTypes $itemTypes -Status Submitted -errorAction SilentlyContinue   
                            
                #If error has occurred 
                if(!$migration){
@@ -2185,72 +2446,105 @@ Function Query-O365GroupEmailAddressMapping {
 Function Get-O365groups {
 
     query-O365GroupEmailAddressMapping
+    
+    do {
+        Write-Host
+        $confirm = (Read-Host -prompt "Do you want to skip the Office 365 Group export from source Ofiice 365 tenant?  [Y]es or [N]o")
+    } while(($confirm.ToLower() -ne "y") -and ($confirm.ToLower() -ne "n"))
 
-    write-host
-
-    $msg = "INFO: Exporting Office 365 groups from source Office 365 tenant."
-    Write-Host $msg
-    Log-Write -Message $msg -LogFile $logFile
-
-    #Export O365 groups from source O365 tenant. SRC prefix
-    $exportO365Groups= @(Get-SRCUnifiedGroup -ResultSize Unlimited | select Displayname,SharePointSiteUrl,primarysmtpaddress)
-
-    $exportO365GroupsArray = @()
-
-    Foreach($exportO365Group in $exportO365Groups) {
-
-        $groupLineItem = New-Object PSObject
-        $groupLineItem | Add-Member -MemberType NoteProperty -Name srcDisplayName -Value $exportO365Group.DisplayName
-        $groupLineItem | Add-Member -MemberType NoteProperty -Name srcSharePointSiteUrl -Value $exportO365Group.SharePointSiteUrl
-        $groupLineItem | Add-Member -MemberType NoteProperty -Name srcPrimarySmtpAddress -Value $exportO365Group.PrimarySmtpAddress
+    if($confirm.ToLower() -eq "n") {
         
-        if($global:sameEmailAddresses -eq $true -and $exportO365Group.PrimarySmtpAddress -notmatch ".onmicrosoft.com" -and $global:destinationDomains.count -eq 1) {
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value $exportO365Group.PrimarySmtpAddress
+        write-host    
+        $msg = "INFO: Exporting Office 365 groups from source Office 365 tenant."
+        Write-Host $msg
+        Log-Write -Message $msg -LogFile $logFile
+
+        #Export O365 groups from source O365 tenant. SRC prefix
+        $exportO365Groups= @(Get-SRCUnifiedGroup -ResultSize Unlimited | select Displayname,SharePointSiteUrl,primarysmtpaddress)
+
+        $exportO365GroupsArray = @()
+
+        Foreach($exportO365Group in $exportO365Groups) {
+
+            $groupLineItem = New-Object PSObject
+            $groupLineItem | Add-Member -MemberType NoteProperty -Name srcDisplayName -Value $exportO365Group.DisplayName
+            $groupLineItem | Add-Member -MemberType NoteProperty -Name srcSharePointSiteUrl -Value $exportO365Group.SharePointSiteUrl
+            $groupLineItem | Add-Member -MemberType NoteProperty -Name srcPrimarySmtpAddress -Value $exportO365Group.PrimarySmtpAddress
+        
+            if($global:sameEmailAddresses -eq $true -and $exportO365Group.PrimarySmtpAddress -notmatch ".onmicrosoft.com" -and $global:destinationDomains.count -eq 1) {
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value $exportO365Group.PrimarySmtpAddress
+            }
+            elseif($global:sameEmailAddresses -eq $true -and $exportO365Group.PrimarySmtpAddress -match ".onmicrosoft.com" -and $global:destinationDomains.count -eq 1) {
+
+                $exportO365GroupPrefix = $exportO365Group.PrimarySmtpAddress.split("@")[0]
+                $destinationDomain = $global:destinationDomains
+
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value "$exportO365GroupPrefix@$destinationDomain"
+            }
+            elseif(!$global:sameEmailAddresses -eq $true -and $global:sameUserName -eq $true -and $global:destinationDomains.count -eq 1) {
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
+
+                $exportO365GroupPrefix = $exportO365Group.PrimarySmtpAddress.split("@")[0]
+                $destinationDomain = $global:destinationDomains
+
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value "$exportO365GroupPrefix@$destinationDomain"
+            }
+            else {
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
+                $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value ""
+            }
+
+            $exportO365GroupsArray += $groupLineItem
         }
-        elseif($global:sameEmailAddresses -eq $true -and $exportO365Group.PrimarySmtpAddress -match ".onmicrosoft.com" -and $global:destinationDomains.count -eq 1) {
 
-            $exportO365GroupPrefix = $exportO365Group.PrimarySmtpAddress.split("@")[0]
-            $destinationDomain = $global:destinationDomains
+        try {
+            $exportO365GroupsArray | Export-Csv -Path $workingDir\ExportedO36Groups.csv -NoTypeInformation -force
 
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value "$exportO365GroupPrefix@$destinationDomain"
+            $msg = "SUCCESS: CSV file '$workingDir\ExportedO36Groups.csv' processed, exported and open."
+            Write-Host -ForegroundColor Green $msg
+            Log-Write -Message $msg -LogFile $logFile
+
+            $msg = "ACTION:  Please provide the 'dstSharePointSiteUrl' and 'dstPrimarySmtpAddress' in the opened CSV file and once you finish, save it."
+            Write-Host -ForegroundColor Yellow  $msg
+            Log-Write -Message $msg -LogFile $logFile
         }
-        elseif(!$global:sameEmailAddresses -eq $true -and $global:sameUserName -eq $true -and $global:destinationDomains.count -eq 1) {
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
+        catch {
+            $msg = "ERROR: Failed to export Office 365 groups to '$workingDir\ExportedO36Groups.csv' CSV file. Script aborted."
+            Write-Host -ForegroundColor Red  $msg
+            Log-Write -Message $msg -LogFile $logFile
+            Write-Host -ForegroundColor Red $_.Exception.Message
+            Log-Write -Message $_.Exception.Message -LogFile $logFile
+            Exit
+        }
+    }
+    elseif($confirm.ToLower() -eq "y") {
+    
+        if ( !(Test-Path -Path $workingDir\ExportedO36Groups.csv)) {
+		    try {
+                $csv = "srcDisplayName,srcSharePointSiteUrl,srcPrimarySmtpAddress,dstSharePointSiteUrl,dstPrimarySmtpAddress`r`n"
+		        $file = New-Item -Path $workingDir -name "ExportedO36Groups.csv" -ItemType file -value $csv
+                $msg = "SUCCESS: '$workingDir\ExportedO36Groups.csv' has been created."
+                Write-Host -ForegroundColor Green $msg
 
-            $exportO365GroupPrefix = $exportO365Group.PrimarySmtpAddress.split("@")[0]
-            $destinationDomain = $global:destinationDomains
+                $msg = "ACTION:  Please fill the CSV file and once you finish, save it."
+                Write-Host -ForegroundColor Yellow  $msg
+                Log-Write -Message $msg -LogFile $logFile
 
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value "$exportO365GroupPrefix@$destinationDomain"
+		    }
+		    catch {
+                $msg = "ERROR: Failed to create '$workingDir\ExportedO36Groups.csv'. Script will abort."
+                Write-Host -ForegroundColor Red $msg
+                Exit
+		    }
         }
         else {
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstSharePointSiteUrl -Value ""
-            $groupLineItem | Add-Member -MemberType NoteProperty -Name dstPrimarySmtpAddress -Value ""
+            $msg = "SUCCESS: CSV file '$workingDir\ExportedO36Groups.csv' found and open."
+            Write-Host -ForegroundColor Green $msg
+            Log-Write -Message $msg -LogFile $logFile
         }
-
-        $exportO365GroupsArray += $groupLineItem
     }
-
-    try {
-        $exportO365GroupsArray| Export-Csv -Path $workingDir\ExportedO36Groups.csv -NoTypeInformation -force
-
-        $msg = "SUCCESS: CSV file '$workingDir\ExportedO36Groups.csv' processed, exported and open."
-        Write-Host -ForegroundColor Green $msg
-        Log-Write -Message $msg -LogFile $logFile
-    }
-    catch {
-        $msg = "ERROR: Failed to export Office 365 groups to '$workingDir\ExportedO36Groups.csv' CSV file. Script aborted."
-        Write-Host -ForegroundColor Red  $msg
-        Log-Write -Message $msg -LogFile $logFile
-        Write-Host -ForegroundColor Red $_.Exception.Message
-        Log-Write -Message $_.Exception.Message -LogFile $logFile
-        Exit
-    }
-
-    $msg = "ACTION:  Please provide the 'dstSharePointSiteUrl' and 'dstPrimarySmtpAddress' in the opened CSV file and once you finish, save it."
-    Write-Host -ForegroundColor Yellow  $msg
-    Log-Write -Message $msg -LogFile $logFile
 
     try {
         #Open the CSV file for editing
