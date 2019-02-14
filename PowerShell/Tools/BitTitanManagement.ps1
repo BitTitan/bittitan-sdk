@@ -707,12 +707,12 @@ function GoogleHelper-GetDomainUsers([string]$domainName)
 
 function GoogleHelper-SetMailboxForward([string]$emailAddress, [string]$targetAddress)
 {
-    $forward = Set-MigrationWizGoogleEmailForward -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -EmailAddress $emailAddress -Enable $true -ForwardTo $targetAddress -Action ([BitTitan.Powershell.Core.GoogleEmailForwardAction]::Archive)
+    $forward = Set-MigrationWizGoogleEmailForward -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -EmailAddress $emailAddress -Enable $true -ForwardTo $targetAddress -Action Archive -Verbose
 }
 
 function GoogleHelper-RemoveMailboxForward([string]$emailAddress)
 {
-    $forward = Set-MigrationWizGoogleEmailForward -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -EmailAddress $emailAddress -Enable $false -ForwardTo $emailAddress -Action ([BitTitan.Powershell.Core.GoogleEmailForwardAction]::Null)
+    $forward = Set-MigrationWizGoogleEmailForward -Ticket (MWHelper-GetTicket) -Environment (MWHelper-ChooseEnvironment) -EmailAddress $emailAddress -Enable $false -ForwardTo $emailAddress -Action DispositionUnspecified
 }
 
 function GoogleHelper-RevokeOAuth2AccessToken()
