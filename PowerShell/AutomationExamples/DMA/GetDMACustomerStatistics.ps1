@@ -170,12 +170,12 @@ foreach ($endUser in $customerEndUsers)
             $IsEdgeCompatible = $True
         }
 
-        # Retrieve customer device user info
-        Write-Verbose "Retrieving customerDeviceUserInfos with end user id $($endUser.Id) and device id $($deviceUser.DeviceId)."
-        $deviceUserInfo = Get-Bt_CustomerDeviceUserInfo -Ticket $Ticket -Environment $Env -FilterBy_Guid_OrganizationId $organizationId -FilterBy_Guid_EndUserId $endUser.Id -FilterBy_Guid_DeviceId $deviceUser.DeviceId -FilterBy_Boolean_IsDeleted $False
+        # Retrieve customer device user
+        Write-Verbose "Retrieving customerDeviceUsers with end user id $($endUser.Id) and device id $($deviceUser.DeviceId)."
+        $deviceUser = Get-Bt_CustomerDeviceUser -Ticket $Ticket -Environment $Env -FilterBy_Guid_OrganizationId $organizationId -FilterBy_Guid_EndUserId $endUser.Id -FilterBy_Guid_DeviceId $deviceUser.DeviceId -FilterBy_Boolean_IsDeleted $False
 
         # Start processing data
-        Write-Verbose "Generating a new item in the report based on customerDevice and deviceUserInfo."
+        Write-Verbose "Generating a new item in the report based on customerDevice and deviceUser."
 
         # Create a new item for the summary
         $object = New-Object -TypeName PSObject
@@ -193,12 +193,12 @@ foreach ($endUser in $customerEndUsers)
         $object | Add-Member -MemberType NoteProperty -Name FreeDiskSpace -Value $device.DiskSpaceFree
         $object | Add-Member -MemberType NoteProperty -Name IsFreeDiskSpaceCompatible -Value $IsFreeDiskSpaceCompatible
 
-        # Add information about the device user info-level fields in the summary
-        if ($deviceUserInfo)
+        # Add information about the device user-level fields in the summary
+        if ($deviceUser)
         {
-            $object | Add-Member -MemberType NoteProperty -Name AgentStatus -Value $deviceUserInfo.AgentStatus
-            $object | Add-Member -MemberType NoteProperty -Name AgentVersion -Value $deviceUserInfo.AgentVersion
-            $object | Add-Member -MemberType NoteProperty -Name AgentLastHeartbeat -Value $deviceUserInfo.LastAgentHeartbeatDate
+            $object | Add-Member -MemberType NoteProperty -Name AgentStatus -Value $deviceUser.AgentStatus
+            $object | Add-Member -MemberType NoteProperty -Name AgentVersion -Value $deviceUser.AgentVersion
+            $object | Add-Member -MemberType NoteProperty -Name AgentLastHeartbeat -Value $deviceUser.LastAgentHeartbeatDate
         }
 
         # Add information about the bandwidth
