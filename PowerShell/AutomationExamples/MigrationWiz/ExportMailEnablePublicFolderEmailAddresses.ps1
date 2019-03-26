@@ -95,7 +95,7 @@ foreach ($folder in $mailpub)
 	$pubObject = new-object PSObject
 	$pubObject | add-member -membertype NoteProperty -name "SmtpAddress" -Value $email
 	$pubObject | add-member -membertype NoteProperty -name "EmailAddresses" -Value $proxy
-	$pubObject | add-member -membertype NoteProperty -name "FolderPath" -Value $folderpath
+	$pubObject | add-member -membertype NoteProperty -name "FolderPath" -Value $folderpath.Replace('\ ','\')
 	
 	# add the object to the result set
 	$resultsarray += $pubObject
