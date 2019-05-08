@@ -1,4 +1,4 @@
-﻿<#
+<#
 .NOTES
     Company:          BitTitan, Inc.
     Title:            Import-mail-enabled-public-folder-email-addresses.ps1
@@ -12,7 +12,9 @@
 .DESCRIPTION
     This script is designed to be ran once for newly migrated mail enabled public folders at the destination.
     It uses the CSV created from the export script and adds the smtp addresses in the EmailAddresses column to the corresponding mail enabled public folders at the destination.
-    Any address in the EmailAddresses column that begins with an uppercase SMTP: will become the primary SMTP address of the mail enabled folder in the destination. 
+    An option is given to set the primary SMTP address for the destination mail enabled folders. If you select yes, Any address in the EmailAddresses column of the mail-enabled-public-folder-email-addresses.csv that begins with an uppercase SMTP will become the primary SMTP address of the mail enabled folder in the destination.
+    If you select no, all SMTP addresses will be added as an alias only to the email addresses field.
+    
 #>
 
 # check if a file has been passed in 
@@ -34,6 +36,10 @@ else
     Write-Warning "Cannot find file to import"
     exit
 }
+
+# prompt yes or no if you would like to set the primary SMTP address when importing the addresses
+ do {$answer = Read-Host -Prompt "`nDo you want to set the Primary SMTP Addresses during import? (yes or no)"}
+ until ("yes","no" -contains $answer)
 
 # import the CSV file which contains all of the mail enabled public folder email addresses
 $importValues = import-csv $file
@@ -72,9 +78,23 @@ foreach ($folder in $folders)
         }
     }
   
-  
-  # set the email addresses
-  Set-MailPublicFolder -Identity $publicFolder.Identity -EmailAddresses $publicFolder.EmailAddresses -EmailAddressPolicyEnabled $false
+    # set the email addresses
+    if ($answer -eq "yes")
+    {
+
+        Set-MailPublicFolder -Identity $publicFolder.Identity -EmailAddresses $publicFolder.EmailAddresses -EmailAddressPolicyEnabled $false -WarningAction SilentlyContinue
+
+    }
+
+    if ($answer -eq "no")
+    {
+
+        Set-MailPublicFolder -Identity $publicFolder.Identity -EmailAddresses $publicFolder.EmailAddresses -EmailAddressPolicyEnabled $true -WarningAction SilentlyContinue
+
+    }
+
+  Write-Output "Processing folder $folder"
+
 }
 
 # output any errors to a text file for customer to review if needed
