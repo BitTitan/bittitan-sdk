@@ -1,4 +1,4 @@
-﻿<#
+<#
 .NOTES
     Company:          BitTitan, Inc.
     Title:            Export-mail-enabled-public-folder-email-addresses.ps1
@@ -106,7 +106,7 @@ if ($resultsarray.length -gt 0)
 {
     # Finally we want export our results to a CSV
     $path = "mail-enabled-public-folder-email-addresses.csv"
-    $resultsarray | export-csv -Path $path
+    $resultsarray | export-csv -Path $path -Encoding UTF8
 
     # Output that the results were written
     "Success: Output the email addresses to CSV file: " + $path
