@@ -1,12 +1,15 @@
 <# 
     .SYNOPSIS
     This script will add an admin user as owner to a given list of teams, or to all teams in the tenant.
+
     .EXAMPLE
     ./AddTeamsOwner.ps1 -username "admin@domain.com" -password "mypassword" -teamsIds ("id1", "id2")
     This adds user "admin@domain.com" to teams id1 and id2.
+
     .EXAMPLE
     ./AddTeamsOwner.ps1 -username "admin@domain.com" -password "mypassword" -all
     This adds user "admin@domain.com" to all teams in the tenant.
+
     .EXAMPLE
     get-help ./AddTeamsOwner.ps1
     This shows the help for the script.
