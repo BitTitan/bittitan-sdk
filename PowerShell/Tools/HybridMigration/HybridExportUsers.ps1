@@ -41,7 +41,7 @@ Write-Output "$outputFile has been created. It can be used for users import for 
 Write-Output "$logFile has been created to keep track of the users export process."
 
 # Get all mailboxes
-$allMailboxes = Get-Mailbox -ResultSize unlimited
+$allMailboxes = Get-Mailbox -ResultSize unlimited | ? {$_.RecipientTypeDetails -ne "DiscoveryMailbox"} 
 if (!$allMailboxes -or $mailboxCount -eq 0) {
     Write-Output "No mailboxes retrieved from the on-premises Exchange server." | Out-File -FilePath $logFile -Append -NoClobber
     exit
