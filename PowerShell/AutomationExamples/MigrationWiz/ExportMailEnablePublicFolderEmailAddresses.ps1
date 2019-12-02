@@ -69,6 +69,8 @@ foreach ($folder in $mailpub)
     if ($pubfolder.parentpath -eq "\")
     {
 	$folderpath = "\" + ($pubfolder.name.trim())
+	$folderpath = $folderpath.Replace(' \', '\')
+        $folderpath = $folderpath.Replace('\ ', '\')
     }
   
     else
