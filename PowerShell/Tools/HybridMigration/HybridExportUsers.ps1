@@ -114,9 +114,7 @@ while ($batchProcess -lt $batchCount) {
             Write-Output "Failed to retrieve the cas mailbox properties for mailbox $($mailbox.PrimarySmtpAddress.Address)." | Out-File -FilePath $logFile -Append -NoClobber
         }
         
-        # Add the mailbox quota as an empty value for now
         # This script will be improved to add specific quotas (e.g. ProhibitSendQuota, IssueWarningQuota) in a future update
-        $mailboxObject | Add-Member NoteProperty -Name "MailboxQuota" -Value ""
         
         # Add the object to the list of mailbox objects
         $mailboxObjects += $mailboxObject
