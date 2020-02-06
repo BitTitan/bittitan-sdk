@@ -78,7 +78,7 @@ while ($batchProcess -lt $batchCount) {
 
         # Add information to the object
         # Add the smtp address
-        $mailboxObject | Add-Member NoteProperty -Name "SMTPAddress" -Value $mailbox.PrimarySmtpAddress
+        $mailboxObject | Add-Member NoteProperty -Name "SMTPAddress" -Value $mailbox.PrimarySmtpAddress.ToString()
 
         # Get the organizatinal unit
         $organizationalUnit = $mailbox.OrganizationalUnit;
@@ -95,7 +95,7 @@ while ($batchProcess -lt $batchCount) {
         $mailboxObject | Add-Member NoteProperty -Name "BatchName" -Value ""
 
         # Get the cas mailbox properties
-        $casMailbox = Get-CASMailbox -Identity $mailbox.PrimarySmtpAddress -ErrorAction SilentlyContinue
+        $casMailbox = Get-CASMailbox -Identity $mailbox.PrimarySmtpAddress.ToString() -ErrorAction SilentlyContinue
         
         # Add the imap, pop, owa and active sync
         if ($casMailbox) {
@@ -111,7 +111,7 @@ while ($batchProcess -lt $batchCount) {
             $mailboxObject | Add-Member NoteProperty -Name "ActiveSync" -Value ""
 
             # Log the error
-            Write-Output "Failed to retrieve the cas mailbox properties for mailbox $($mailbox.PrimarySmtpAddress.Address)." | Out-File -FilePath $logFile -Append -NoClobber
+            Write-Output "Failed to retrieve the cas mailbox properties for mailbox $($mailbox.PrimarySmtpAddress.ToString())." | Out-File -FilePath $logFile -Append -NoClobber
         }
         
         # This script will be improved to add specific quotas (e.g. ProhibitSendQuota, IssueWarningQuota) in a future update
