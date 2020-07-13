@@ -99,10 +99,9 @@ Log-Write -LogPath $logfile -LineValue $msg
 
 
 $azureConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.AzureConfiguration'
-$oneDriveProConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.OneDriveProConfiguration'
-
+$oneDriveProConfiguration = New-Object -TypeName 'ManagementProxy.ManagementService.SharePointOnlineConfiguration'
 $MWazureConfiguration = New-Object -TypeName           'MigrationProxy.WebApi.AzureConfiguration'
-$MWoneDriveProConfiguration = New-Object -TypeName     'MigrationProxy.WebApi.OneDriveProConfiguration'
+$MWoneDriveProConfiguration = New-Object -TypeName     'MigrationProxy.WebApi.SharePointOnlineConfiguration'
 
 #Reading the Configuration File with the different Parameter
 #
@@ -252,37 +251,38 @@ TRY
                 
                 $MWT = Get-MW_Ticket -Credentials $cred 
                 
-                #$oneDriveProConfiguration.AzureStorageAccountName = $azureConfiguration.AdministrativeUsername
-                #$oneDriveProConfiguration.AzureAccountKey = $azureConfiguration.AccessKey
+                $oneDriveProConfiguration.AzureStorageAccountName = $azureConfiguration.AdministrativeUsername
+                $oneDriveProConfiguration.AzureAccountKey = $azureConfiguration.AccessKey
 
-                $destinationEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name "OD4B v1 PS" -FilterBy_Boolean_IsDeleted false
-              
+                $destinationEndpointName = "OD4B v2 PS"
+                $destinationEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name $destinationEndpointName -FilterBy_Boolean_IsDeleted false              
                 
                 if (!$destinationEndpoint)
                 {
-                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint OD4B v1 PS"
-                    $destinationEndpoint = Add-BT_Endpoint -Ticket $t -Name "OD4B v1 PS" -Type "OneDrivePro" -Configuration $oneDriveProConfiguration
-                    Log-Write -LogPath $logfile -LineValue "Endpoint OD4B v1 PS created"
+                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint $destinationEndpointName"
+                    $destinationEndpoint = Add-BT_Endpoint -Ticket $t -Name $destinationEndpointName -Type "OneDriveProAPI" -Configuration $oneDriveProConfiguration
+                    Log-Write -LogPath $logfile -LineValue "Endpoint $destinationEndpointName created"
                 }
                 else
                 {
-                    Log-Write -LogPath $logfile -LineValue "Found Endpoint OD4B v1 PS"
+                    Log-Write -LogPath $logfile -LineValue "Found Endpoint $destinationEndpointName"
                 }
 
-                $sourceEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name "HomeDrive PS" -FilterBy_Boolean_IsDeleted false
+                $sourceEndpointName = "HomeDrive PS"
+                $sourceEndpoint = Get-BT_Endpoint -Ticket $t -FilterBy_String_Name $sourceEndpointName -FilterBy_Boolean_IsDeleted false
                 if (!$sourceEndpoint)
                 {
-                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint HomeDrive PS"
-                    $sourceEndpoint = Add-BT_Endpoint -Ticket $t -Name "HomeDrive PS" -Type "AzureFileSystem" -Configuration $azureConfiguration
-                    Log-Write -LogPath $logfile -LineValue "Endpoint HomeDrive PS created"                 
+                    Log-Write -LogPath $logfile -LineValue "Creating Endpoint $sourceEndpointName"
+                    $sourceEndpoint = Add-BT_Endpoint -Ticket $t -Name $sourceEndpointName -Type "AzureFileSystem" -Configuration $azureConfiguration
+                    Log-Write -LogPath $logfile -LineValue "Endpoint $sourceEndpointName created"                 
                 }
                 else
                 {
-                    Log-Write -LogPath $logfile -LineValue "Found Endpoint HomeDrive PS" 
+                    Log-Write -LogPath $logfile -LineValue "Found Endpoint $sourceEndpointName" 
                 }
 
                 $MWazureConfiguration = New-Object -TypeName           'MigrationProxy.WebApi.AzureConfiguration'
-                $MWoneDriveProConfiguration = New-Object -TypeName     'MigrationProxy.WebApi.OneDriveProConfiguration'
+                $MWoneDriveProConfiguration = New-Object -TypeName     'MigrationProxy.WebApi.SharePointOnlineConfiguration'
 
                 $MWazureConfiguration.AccessKey = $azureConfiguration.AccessKey
                 $MWazureConfiguration.AdministrativeUsername = $azureConfiguration.AdministrativeUsername
@@ -291,13 +291,13 @@ TRY
 
                 $MWoneDriveProConfiguration.AdministrativePassword = $oneDriveProConfiguration.AdministrativePassword
                 $MWoneDriveProConfiguration.AdministrativeUsername = $oneDriveProConfiguration.AdministrativeUsername
-                #$MWoneDriveProConfiguration.AzureAccountKey = $oneDriveProConfiguration.AzureAccountKey
-                #$MWoneDriveProConfiguration.AzureStorageAccountName = $oneDriveProConfiguration.AzureStorageAccountName
+                $MWoneDriveProConfiguration.AzureAccountKey = $oneDriveProConfiguration.AzureAccountKey
+                $MWoneDriveProConfiguration.AzureStorageAccountName = $oneDriveProConfiguration.AzureStorageAccountName
                 $MWoneDriveProConfiguration.UseAdministrativeCredentials = $oneDriveProConfiguration.UseAdministrativeCredentials
 
                 
                 $connector = Add-MW_MailboxConnector -ticket $MWT -Name $ProjectName -ProjectType Storage `
-                        -ImportType OneDrivePro -ImportConfiguration $MWoneDriveProConfiguration `
+                        -ImportType OneDriveProAPI -ImportConfiguration $MWoneDriveProConfiguration `
                         -ExportType AzureFileSystem -ExportConfiguration $MWazureConfiguration `
                         -OrganizationId $customer.OrganizationId `
                         -SelectedExportEndpointId $sourceEndpoint.Id `
