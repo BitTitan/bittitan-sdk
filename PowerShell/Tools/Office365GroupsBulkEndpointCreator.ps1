@@ -4,8 +4,9 @@
     Title:            Office365GroupsBulkEndpointCreator.ps1
     Author:           Support@BitTitan.com
 
-    Version:          1.00
+    Version:          1.01
     Date:             August 21, 2018
+    Updated:          October 28, 2020
 
     Disclaimer:       This script is provided 'AS IS'. No warranty is provided either expressed or implied
 
@@ -33,7 +34,7 @@ function Read-Csv($csvPath)
 # Gets the workgroup that the data will be stored under.
 function Get-Workgroup($ticket)
 {
-    $workgroups = Get-BT_Workgroup -Ticket $ticket
+    [array]$workgroups = Get-BT_Workgroup -Ticket $ticket
     
     if ($workgroups.Length -gt 1)
     {
@@ -61,7 +62,7 @@ function Get-Workgroup($ticket)
 # Gets the customer that will contain the endpoints and projects.
 function Get-Customer($ticket, $workgroupIdNum)
 {
-	$customers = Get-BT_Customer -Ticket $ticket -WorkgroupId $workgroupIdNum
+	[array]$customers = Get-BT_Customer -Ticket $ticket -WorkgroupId $workgroupIdNum
 	
     if ($customers.Length -gt 1)
     {
@@ -87,7 +88,7 @@ function Get-Customer($ticket, $workgroupIdNum)
 }
 
 # Generates the Office 365 Group endpoints.
-function Add-Endpoints($endpoints, $ticket, $customerOrgId, $sourceOrDestination)
+function Add-Endpoints([array]$endpoints, $ticket, $customerOrgId, $sourceOrDestination)
 {
     $allEndpoints = @()
 
@@ -112,7 +113,7 @@ function Add-Endpoints($endpoints, $ticket, $customerOrgId, $sourceOrDestination
 }
 
 # Creates the migration projects, using the endpoint information passed in.
-function Add-Projects($endpoints, $sourceEndpoints, $destinationEndpoints, $ticket, $customerOrgId)
+function Add-Projects([array]$endpoints, $sourceEndpoints, $destinationEndpoints, $ticket, $customerOrgId)
 {
     $projectIds = @()
 
@@ -131,7 +132,7 @@ function Add-Projects($endpoints, $sourceEndpoints, $destinationEndpoints, $tick
 }
 
 # Adds the default line item to the project.
-function Add-ItemsToProject($ticket, $projectIds)
+function Add-ItemsToProject($ticket, [array]$projectIds)
 {
     $projectItems = @()
 
