@@ -72,10 +72,10 @@ if (-not $Ticket.IsPrivileged)
 }
 
 # Log Checkpoint
-Write-Verbose "Health check O365 report will be generated to $Csv for customer $($customer.CompanyName)."
+Write-Host "Health check O365 report will be generated to $Csv for customer $($customer.CompanyName)."
 
 # Retrieve the customer end users with pagination
-Write-Verbose "Retrieving all customerEndUsers...This may take a while."
+Write-Host "Retrieving all customerEndUsers...This may take a while."
 $count = 0
 $customerEndUsers = New-Object System.Collections.ArrayList
 While($true)
@@ -86,7 +86,7 @@ While($true)
     if ($temp.count -lt $PageSize) { break } 
     $count++
 }
-Write-Verbose "Totally $($customerEndUsers.Count) customerEndUsers retrieved."
+Write-Host "Total of $($customerEndUsers.Count) customerEndUsers retrieved, gathering information."
 
 # Build the output array list
 $outputObjects = New-Object System.Collections.ArrayList
